@@ -1,0 +1,20 @@
+from src.domain.__seedwork.use_case_interface import UseCaseInterface
+from src.domain.product.product_repository_interface import ProductRepositoryInterface
+from src.usecases.product.update_product.update_product_dto import UpdateProductInputDto, UpdateProductOutputDto
+
+
+class UpdateProductUseCase(UseCaseInterface):
+    def __init__(self, product_repository: ProductRepositoryInterface):
+        self.product_repository = product_repository
+
+    def execute(self, input: UpdateProductInputDto) -> UpdateProductOutputDto:
+        
+        product = self.product_repository.find_product(product_id=input.id)
+
+        product.name = input.name
+        product.price = input.price
+        product.category = input.category
+
+        self.product_repository.update_product(product=product)
+
+        return UpdateProductOutputDto(id=product.id, name=product.name, price=product.price, category=product.category)
