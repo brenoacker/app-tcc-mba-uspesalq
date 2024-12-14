@@ -6,7 +6,7 @@ from src.domain.order.order_entity import Order
 class OrderRepositoryInterface(ABC):
 
     @abstractmethod
-    def add_order(self, order: Order) -> None:
+    def create_order(self, order: Order) -> Order:
         raise NotImplementedError
 
     @abstractmethod
@@ -14,11 +14,11 @@ class OrderRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update_order(self, order: Order) -> None:
+    def update_order(self, order: Order) -> Order:
         raise NotImplementedError
 
     @abstractmethod
-    def list_orders(self) -> List[Order]:
+    def list_orders(self, user_id: UUID) -> List[Order]:
         raise NotImplementedError
     
     @abstractmethod
