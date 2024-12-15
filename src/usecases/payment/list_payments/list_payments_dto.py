@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import List
 from uuid import UUID
+
 from pydantic import BaseModel
 
-from src.domain.payment.payment_card_gateway_enum import PaymentCardGateway
-from src.domain.payment.payment_method_enum import PaymentMethod
-from src.domain.payment.payment_status_enum import PaymentStatus
+from domain.payment.payment_card_gateway_enum import PaymentCardGateway
+from domain.payment.payment_method_enum import PaymentMethod
+from domain.payment.payment_status_enum import PaymentStatus
 
 
 class ListPaymentsInputDto(BaseModel):

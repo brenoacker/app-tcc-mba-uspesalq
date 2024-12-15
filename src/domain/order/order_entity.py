@@ -1,10 +1,12 @@
-from typing import List
-from uuid import UUID
 from datetime import datetime
 from enum import Enum
-from src.domain.order.order_status_enum import OrderStatus
-from src.domain.order_item.order_item_entity import OrderItem
-from src.domain.product.product_entity import Product
+from typing import List
+from uuid import UUID
+
+from domain.order.order_status_enum import OrderStatus
+from domain.order_item.order_item_entity import OrderItem
+from domain.product.product_entity import Product
+
 
 class Order:
     id: UUID

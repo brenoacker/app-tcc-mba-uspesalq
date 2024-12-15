@@ -1,7 +1,8 @@
 from typing import List
 from uuid import UUID
-from src.domain.cart_item.cart_item_entity import CartItem
-from src.domain.product.product_entity import Product
+
+from domain.cart_item.cart_item_entity import CartItem
+from domain.product.product_entity import Product
 
 
 class Cart:

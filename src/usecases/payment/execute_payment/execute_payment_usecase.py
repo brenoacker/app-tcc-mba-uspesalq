@@ -1,11 +1,14 @@
-from datetime import datetime
 import uuid
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.payment.payment_entity import Payment
-from src.domain.payment.payment_method_enum import PaymentMethod
-from src.domain.payment.payment_repository_interface import PaymentRepositoryInterface
-from src.domain.payment.payment_status_enum import PaymentStatus
-from src.usecases.payment.execute_payment.execute_payment_dto import ExecutePaymentInputDto, ExecutePaymentOutputDto
+from datetime import datetime
+
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.payment.payment_entity import Payment
+from domain.payment.payment_method_enum import PaymentMethod
+from domain.payment.payment_repository_interface import \
+    PaymentRepositoryInterface
+from domain.payment.payment_status_enum import PaymentStatus
+from usecases.payment.execute_payment.execute_payment_dto import (
+    ExecutePaymentInputDto, ExecutePaymentOutputDto)
 
 
 class ExecutePaymentUseCase(UseCaseInterface):

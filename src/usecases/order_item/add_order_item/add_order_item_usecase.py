@@ -1,8 +1,11 @@
 import uuid
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.order_item.order_item_entity import OrderItem
-from src.domain.order_item.order_item_repository_interface import OrderItemRepositoryInterface
-from src.usecases.order_item.add_order_item.add_order_item_dto import AddOrderItemInputDto, AddOrderItemOutputDto
+
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.order_item.order_item_entity import OrderItem
+from domain.order_item.order_item_repository_interface import \
+    OrderItemRepositoryInterface
+from usecases.order_item.add_order_item.add_order_item_dto import (
+    AddOrderItemInputDto, AddOrderItemOutputDto)
 
 
 class AddOrderItemUseCase(UseCaseInterface):

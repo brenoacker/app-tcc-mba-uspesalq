@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from src.domain.offer.offer_type_enum import OfferType
+from domain.offer.offer_type_enum import OfferType
 
 
 class Offer:
