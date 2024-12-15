@@ -1,7 +1,10 @@
 from typing import List
 from uuid import UUID
+
 from pydantic import BaseModel
-from src.domain.cart.cart_entity import Cart
+
+from domain.cart.cart_entity import Cart
+
 
 class CartItemDto(BaseModel):
     id: UUID

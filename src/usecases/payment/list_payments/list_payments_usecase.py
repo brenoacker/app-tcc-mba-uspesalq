@@ -1,6 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.payment.payment_repository_interface import PaymentRepositoryInterface
-from src.usecases.payment.list_payments.list_payments_dto import ListPaymentsInputDto, ListPaymentsOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.payment.payment_repository_interface import \
+    PaymentRepositoryInterface
+from usecases.payment.list_payments.list_payments_dto import (
+    ListPaymentsInputDto, ListPaymentsOutputDto)
 
 
 class ListPaymentsUseCase(UseCaseInterface):

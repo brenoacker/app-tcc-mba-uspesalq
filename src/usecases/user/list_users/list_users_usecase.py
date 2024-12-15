@@ -1,6 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.user.user_repository_interface import UserRepositoryInterface
-from src.usecases.user.list_users.list_users_dto import ListUsersInputDto, ListUsersOutputDto, UserDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.user.user_repository_interface import UserRepositoryInterface
+from usecases.user.list_users.list_users_dto import (ListUsersInputDto,
+                                                     ListUsersOutputDto,
+                                                     UserDto)
 
 
 class ListUsersUseCase(UseCaseInterface):
@@ -15,6 +17,6 @@ class ListUsersUseCase(UseCaseInterface):
         output = []
 
         for user in users:
-            output.append(UserDto(id=user.id, name=user.name))
+            output.append(UserDto(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password))
 
         return ListUsersOutputDto(users=output)

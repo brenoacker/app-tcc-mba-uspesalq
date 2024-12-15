@@ -1,8 +1,11 @@
 import uuid
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.product.product_entity import Product
-from src.domain.product.product_repository_interface import ProductRepositoryInterface
-from src.usecases.product.add_product.add_product_dto import AddProductInputDto, AddProductOutputDto
+
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.product.product_entity import Product
+from domain.product.product_repository_interface import \
+    ProductRepositoryInterface
+from usecases.product.add_product.add_product_dto import (AddProductInputDto,
+                                                          AddProductOutputDto)
 
 
 class AddProductUseCase(UseCaseInterface):

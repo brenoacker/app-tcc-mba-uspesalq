@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 from uuid import UUID
-from src.domain.payment.payment_entity import Payment
+
+from domain.payment.payment_entity import Payment
 
 
 class PaymentRepositoryInterface(ABC):

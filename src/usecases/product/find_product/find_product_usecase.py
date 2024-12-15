@@ -1,6 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.product.product_repository_interface import ProductRepositoryInterface
-from src.usecases.product.find_product.find_product_dto import FindProductInputDto, FindProductOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.product.product_repository_interface import \
+    ProductRepositoryInterface
+from usecases.product.find_product.find_product_dto import (
+    FindProductInputDto, FindProductOutputDto)
 
 
 class FindProductUsecase(UseCaseInterface):

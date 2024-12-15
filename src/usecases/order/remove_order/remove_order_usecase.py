@@ -1,6 +1,7 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.order.order_repository_interface import OrderRepositoryInterface
-from src.usecases.order.remove_order.remove_order_dto import RemoveOrderInputDto, RemoveOrderOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.order.order_repository_interface import OrderRepositoryInterface
+from usecases.order.remove_order.remove_order_dto import (RemoveOrderInputDto,
+                                                          RemoveOrderOutputDto)
 
 
 class RemoveOrderUseCase(UseCaseInterface):

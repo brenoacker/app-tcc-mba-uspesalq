@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 from uuid import UUID
-from src.domain.offer.offer_entity import Offer
+
+from domain.offer.offer_entity import Offer
 
 
 class OfferRepositoryInterface(ABC):

@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 from uuid import UUID
-from src.domain.order_item.order_item_entity import OrderItem
+
+from domain.order_item.order_item_entity import OrderItem
 
 
 class OrderItemRepositoryInterface(ABC):

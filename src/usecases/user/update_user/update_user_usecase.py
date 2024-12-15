@@ -1,7 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.user.user_entity import User
-from src.domain.user.user_repository_interface import UserRepositoryInterface
-from src.usecases.user.update_user.update_user_dto import UpdateUserInputDto, UpdateUserOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.user.user_entity import User
+from domain.user.user_repository_interface import UserRepositoryInterface
+from usecases.user.update_user.update_user_dto import (UpdateUserInputDto,
+                                                       UpdateUserOutputDto)
 
 
 class UpdateUserUseCase(UseCaseInterface):
@@ -11,7 +12,7 @@ class UpdateUserUseCase(UseCaseInterface):
 
     def execute(self, input: UpdateUserInputDto) -> UpdateUserOutputDto:
         
-        user = User(id=input.user_id, name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
+        user = User(id=input.id, name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
 
         self.user_repository.update_user(user=user)
 

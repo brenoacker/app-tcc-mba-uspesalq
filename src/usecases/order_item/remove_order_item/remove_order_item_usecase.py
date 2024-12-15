@@ -1,7 +1,11 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.order_item.order_item_repository_interface import OrderItemRepositoryInterface
-from src.usecases.order_item.list_order_items.list_order_items_dto import ListOrderItemsInputDto, ListOrderItemsOutputDto
-from src.usecases.order_item.remove_order_item.remove_order_item_dto import RemoveOrderItemInputDto, RemoveOrderItemOutputDto
+from usecases.order_item.list_order_items.list_order_items_dto import (
+    ListOrderItemsInputDto, ListOrderItemsOutputDto)
+
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.order_item.order_item_repository_interface import \
+    OrderItemRepositoryInterface
+from usecases.order_item.remove_order_item.remove_order_item_dto import (
+    RemoveOrderItemInputDto, RemoveOrderItemOutputDto)
 
 
 class RemoveOrderItemUseCase(UseCaseInterface):

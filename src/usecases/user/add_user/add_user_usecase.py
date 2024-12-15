@@ -1,7 +1,10 @@
 import uuid
-from src.domain.user.user_entity import User
-from src.domain.user.user_repository_interface import UserRepositoryInterface
-from src.usecases.user.add_user.add_user_dto import AddUserInputDto, AddUserOutputDto
+from http.client import HTTPException
+
+from domain.user.user_entity import User
+from domain.user.user_repository_interface import UserRepositoryInterface
+from usecases.user.add_user.add_user_dto import (AddUserInputDto,
+                                                 AddUserOutputDto)
 
 
 class AddUserUseCase:
@@ -10,7 +13,7 @@ class AddUserUseCase:
 
     def execute(self, input: AddUserInputDto) -> AddUserOutputDto:
         
-        user = User(id=uuid.uuid4(), name=input.name, email=input.email, password=input.password)
+        user = User(id=uuid.uuid4(), name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
 
         self.user_repository.add_user(user=user)
 

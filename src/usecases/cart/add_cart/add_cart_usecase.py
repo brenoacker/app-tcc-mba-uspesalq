@@ -1,8 +1,10 @@
 import uuid
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.cart.cart_entity import Cart
-from src.domain.cart.cart_repository_interface import CartRepositoryInterface
-from src.usecases.cart.add_cart.add_cart_dto import AddCartInputDto, AddCartOutputDto
+
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.cart.cart_entity import Cart
+from domain.cart.cart_repository_interface import CartRepositoryInterface
+from usecases.cart.add_cart.add_cart_dto import (AddCartInputDto,
+                                                 AddCartOutputDto)
 
 
 class AddCartUseCase(UseCaseInterface):

@@ -4,7 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.usecases.order.create_order.create_order_dto import OrderItemDto, OrderStatusDto
+from usecases.order.create_order.create_order_dto import (OrderItemDto,
+                                                          OrderStatusDto)
 
 
 class UpdateOrderInputDto(BaseModel):

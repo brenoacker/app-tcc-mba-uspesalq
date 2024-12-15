@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from uuid import UUID
 
-from src.domain.cart_item.cart_item_entity import CartItem
+from domain.cart_item.cart_item_entity import CartItem
 
 
 class CartItemRepositoryInterface(ABC):

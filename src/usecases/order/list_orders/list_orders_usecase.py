@@ -1,6 +1,7 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.order.order_repository_interface import OrderRepositoryInterface
-from src.usecases.order.list_orders.list_orders_dto import ListOrdersInputDto, ListOrdersOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.order.order_repository_interface import OrderRepositoryInterface
+from usecases.order.list_orders.list_orders_dto import (ListOrdersInputDto,
+                                                        ListOrdersOutputDto)
 
 
 class ListOrdersUseCase(UseCaseInterface):

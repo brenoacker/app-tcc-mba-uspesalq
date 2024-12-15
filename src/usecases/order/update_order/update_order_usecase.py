@@ -1,7 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.order.order_entity import Order
-from src.domain.order.order_repository_interface import OrderRepositoryInterface
-from src.usecases.order.update_order.update_order_dto import UpdateOrderInputDto, UpdateOrderOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.order.order_entity import Order
+from domain.order.order_repository_interface import OrderRepositoryInterface
+from usecases.order.update_order.update_order_dto import (UpdateOrderInputDto,
+                                                          UpdateOrderOutputDto)
 
 
 class UpdateOrderUseCase(UseCaseInterface):

@@ -1,5 +1,6 @@
 from uuid import UUID
-from src.domain.product.product_category_enum import ProductCategory
+
+from domain.product.product_category_enum import ProductCategory
 
 
 class Product:

@@ -1,7 +1,8 @@
-from src.domain.__seedwork.use_case_interface import UseCaseInterface
-from src.domain.cart.cart_entity import Cart
-from src.domain.cart.cart_repository_interface import CartRepositoryInterface
-from src.usecases.cart.update_cart.update_cart_dto import UpdateCartInputDto, UpdateCartOutputDto
+from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.cart.cart_entity import Cart
+from domain.cart.cart_repository_interface import CartRepositoryInterface
+from usecases.cart.update_cart.update_cart_dto import (UpdateCartInputDto,
+                                                       UpdateCartOutputDto)
 
 
 class UpdateCartUseCase(UseCaseInterface):
