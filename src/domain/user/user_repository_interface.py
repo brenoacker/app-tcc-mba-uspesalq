@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from user_entity import User
 from typing import List
 from uuid import UUID
+
+from domain.user.user_entity import User
+
 
 class UserRepositoryInterface(ABC):
 
@@ -19,4 +21,8 @@ class UserRepositoryInterface(ABC):
 
     @abstractmethod
     def list_users(self) -> List[User]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def delete_user(self, user_id: UUID) -> None:
         raise NotImplementedError
