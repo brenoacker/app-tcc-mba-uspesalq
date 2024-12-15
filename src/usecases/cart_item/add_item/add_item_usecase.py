@@ -12,6 +12,6 @@ class AddItemUseCase(UseCaseInterface):
     def execute(self, input: AddItemInputDto) -> AddItemOutputDto:
         cart_item = CartItem(id=uuid.uuid4(), user_id=input.user_id, product_id=input.product_id, quantity=input.quantity)
 
-        self.cart_item_repository.add_item(item=cart_item)
+        self.cart_item_repository.add_cart(cart=cart_item)
 
         return AddItemOutputDto(id=cart_item.id, user_id=cart_item.user_id, product_id=cart_item.product_id, quantity=cart_item.quantity)
