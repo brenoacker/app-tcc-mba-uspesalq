@@ -65,8 +65,8 @@ def update_user(user_id: UUID, request: UpdateUserInputDto, session: Session = D
 
         usecase = UpdateUserUseCase(user_repository=user_repository)
         output = usecase.execute(
+            id=user_id,
             input=UpdateUserInputDto(
-                id=user_found.id,
                 name=user_found.name,
                 email=user_found.email,
                 phone_number=user_found.phone_number,

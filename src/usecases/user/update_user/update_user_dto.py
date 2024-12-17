@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 
 class UpdateUserInputDto(BaseModel):
-    id: UUID = None
     name: str = None
     email: str = None
     phone_number: str = None
