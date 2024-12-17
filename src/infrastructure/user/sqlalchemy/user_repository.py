@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy.orm.session import Session
@@ -29,9 +29,12 @@ class UserRepository(UserRepositoryInterface):
 
         return user
     
-    def find_user_by_email(self, email: str) -> User:
+    def find_user_by_email(self, email: str) -> Optional[User]:
 
         user_in_db: UserModel = self.session.query(UserModel).filter(UserModel.email == email).first()
+        if not user_in_db:
+            return None
+       
         user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email, phone_number=user_in_db.phone_number, password=user_in_db.password)
 
         return user

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.user.user_entity import User
 from domain.user.user_repository_interface import UserRepositoryInterface
@@ -10,10 +12,10 @@ class UpdateUserUseCase(UseCaseInterface):
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def execute(self, input: UpdateUserInputDto) -> UpdateUserOutputDto:
+    def execute(self, id: UUID, input: UpdateUserInputDto) -> UpdateUserOutputDto:
         
-        user = User(id=input.id, name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
+        user = User(id=id, name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
 
         self.user_repository.update_user(user=user)
 
-        return UpdateUserOutputDto(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
+        return UpdateUserOutputDto(id=id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
