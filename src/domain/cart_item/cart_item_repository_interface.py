@@ -26,3 +26,7 @@ class CartItemRepositoryInterface(ABC):
     @abstractmethod
     def list_items(self, user_id: UUID) -> List[CartItem]:
         raise NotImplementedError
+    
+    @abstractmethod
+    def list_items_by_user(self, user_id: UUID) -> List[CartItem]:
+        raise NotImplementedError

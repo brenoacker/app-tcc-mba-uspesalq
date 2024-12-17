@@ -1,10 +1,10 @@
 from typing import List
 from uuid import UUID
+
 from pydantic import BaseModel
 
-
-class ListItemsInputDto(BaseModel):
-    pass
+# class ListItemsInputDto(BaseModel):
+#     id: UUID
 
 class ListItemsDto(BaseModel):
     id: UUID

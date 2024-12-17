@@ -16,4 +16,4 @@ class RemoveItemUseCase(UseCaseInterface):
 
         self.cart_item_repository.remove_item(item=cart_item)
 
-        return None
+        return cart_item
