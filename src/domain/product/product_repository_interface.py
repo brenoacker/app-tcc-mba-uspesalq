@@ -14,6 +14,14 @@ class ProductRepositoryInterface(ABC):
     @abstractmethod
     def find_product(self, product_id: UUID) -> Product:
         raise NotImplementedError
+    
+    @abstractmethod
+    def find_product_by_name(self, name: str) -> Product:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def find_product_by_code(self, product_code: str) -> Product:
+        raise NotImplementedError
 
     @abstractmethod
     def update_product(self, product: Product) -> None:
@@ -21,4 +29,8 @@ class ProductRepositoryInterface(ABC):
 
     @abstractmethod
     def list_products(self) -> List[Product]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def delete_product(self, product_id: UUID) -> None:
         raise NotImplementedError
