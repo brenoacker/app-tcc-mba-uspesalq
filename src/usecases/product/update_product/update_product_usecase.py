@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.product.product_repository_interface import \
     ProductRepositoryInterface
@@ -9,9 +11,9 @@ class UpdateProductUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, input: UpdateProductInputDto) -> UpdateProductOutputDto:
+    def execute(self, product_id: UUID, input: UpdateProductInputDto) -> UpdateProductOutputDto:
         
-        product = self.product_repository.find_product(product_id=input.id)
+        product = self.product_repository.find_product(product_id=product_id)
 
         product.name = input.name
         product.price = input.price
