@@ -108,3 +108,43 @@ def test_offer_apply_discount():
     offer = Offer(id=offer_id, product_id=product_id, start_date=start_date, end_date=end_date, discount_type=OfferType.AMOUNT, discount_value=10.0)
     assert offer.apply_discount(100.0) == 90.0
     assert offer.apply_discount(5.0) == 0.0
+
+def test_offer_invalid_start_date():
+    offer_id = uuid4()
+    product_id = uuid4()
+    discount_type = OfferType.PERCENTAGE
+    discount_value = 10.0
+
+    with pytest.raises(Exception) as excinfo:
+        Offer(id=offer_id, product_id=product_id, start_date="invalid_date", end_date=datetime.now() + timedelta(days=10), discount_type=discount_type, discount_value=discount_value)
+    assert str(excinfo.value) == "start_date must be a datetime object"
+
+def test_offer_invalid_end_date():
+    offer_id = uuid4()
+    product_id = uuid4()
+    discount_type = OfferType.PERCENTAGE
+    discount_value = 10.0
+
+    with pytest.raises(Exception) as excinfo:
+        Offer(id=offer_id, product_id=product_id, start_date=datetime.now() + timedelta(days=1), end_date="invalid_date", discount_type=discount_type, discount_value=discount_value)
+    assert str(excinfo.value) == "end_date must be a datetime object"
+
+def test_offer_start_date_after_end_date():
+    offer_id = uuid4()
+    product_id = uuid4()
+    discount_type = OfferType.PERCENTAGE
+    discount_value = 10.0
+
+    with pytest.raises(Exception) as excinfo:
+        Offer(id=offer_id, product_id=product_id, start_date=datetime.now() + timedelta(days=10), end_date=datetime.now() + timedelta(days=1), discount_type=discount_type, discount_value=discount_value)
+    assert str(excinfo.value) == "start_date must be before end_date"
+
+def test_offer_end_date_in_past():
+    offer_id = uuid4()
+    product_id = uuid4()
+    discount_type = OfferType.PERCENTAGE
+    discount_value = 10.0
+
+    with pytest.raises(Exception) as excinfo:
+        Offer(id=offer_id, product_id=product_id, start_date=datetime.now() - timedelta(days=10), end_date=datetime.now() - timedelta(days=1), discount_type=discount_type, discount_value=discount_value)
+    assert str(excinfo.value) == "end_date must be in the future"
