@@ -14,6 +14,9 @@ class RemoveItemUseCase(UseCaseInterface):
         
         cart_item = self.cart_item_repository.find_item(item_id=input.id)
 
-        self.cart_item_repository.remove_item(item=cart_item)
+        if not cart_item:
+            raise ValueError(f"Cart Item with id '{input.id}' not found")
+
+        self.cart_item_repository.remove_item(item_id=cart_item.id)
 
         return cart_item

@@ -22,10 +22,11 @@ class ProductRepository(ProductRepositoryInterface):
         
         self.session.add(product_model)
         self.session.commit()
+        self.session.refresh(product_model)
         
         return product_model
     
-    def find_product(self, product_id: UUID) -> Optional[Product]:
+    def find_product(self, product_id: int) -> Optional[Product]:
         
         product_in_db: ProductModel = self.session.query(ProductModel).get(product_id)
         if not product_in_db:
@@ -45,15 +46,20 @@ class ProductRepository(ProductRepositoryInterface):
         
         return product
     
-    def find_product_by_code(self, product_code: int) -> Optional[ProductModel]:
-        
+    def find_product_by_code(self, product_code: int) -> Optional[Product]:
+        '''Find a product by its code'''
+        # Create code that filters the product by product_code without the id
+
         product_in_db: ProductModel = self.session.query(ProductModel).filter(ProductModel.product_code == product_code).first()
+        
+        
+        # product_in_db: ProductModel = self.session.query(ProductModel).filter(ProductModel.product_code == product_code).first()
         if not product_in_db:
             return None
         
-        # product = Product(id=product_in_db.id, name=product_in_db.name, price=product_in_db.price, category=product_in_db.category)
+        product = Product(id=product_in_db.id, name=product_in_db.name, price=product_in_db.price, category=product_in_db.category)
         
-        return product_in_db
+        return product
     
     def update_product(self, product: Product) -> None:
         

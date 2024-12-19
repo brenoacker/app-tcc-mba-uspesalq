@@ -15,7 +15,4 @@ class ListProductsUseCase(UseCaseInterface):
 
         products = self.product_repository.list_products()
 
-        # for product in products:
-        #     logging.info(f'ListProductsUseCase - product: {product.id} - {product.name} - {product.price} - {product.category}')
-
         return ListProductsOutputDto(products=products)

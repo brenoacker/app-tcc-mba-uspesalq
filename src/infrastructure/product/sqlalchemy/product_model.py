@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Float, Integer, String, TypeDecorator
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
 
 from domain.product.product_category_enum import ProductCategory
 from infrastructure.api.database import Base
@@ -22,8 +21,7 @@ class ProductCategoryType(TypeDecorator):
 class ProductModel(Base):
     __tablename__ = "tb_products"
 
-    id = Column(UUID, primary_key=True, index=True)
-    product_code = Column(Integer, unique=True, nullable=False, autoincrement=True)
-    name = Column(String)
-    price = Column(Float)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
     category = Column(ProductCategoryType)

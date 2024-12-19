@@ -13,4 +13,7 @@ class FindItemUseCase(UseCaseInterface):
 
         cart_item = self.cart_item_repository.find_item(item_id=input.id)
 
-        return FindItemOutputDto(id=cart_item.id, user_id=cart_item.user_id, product_id=cart_item.product_id, quantity=cart_item.quantity)
+        if not cart_item:
+            raise ValueError(f"Cart item with id '{input.id}' not found")
+
+        return FindItemOutputDto(id=cart_item.id, cart_id=cart_item.cart_id, product_id=cart_item.product_id, quantity=cart_item.quantity)

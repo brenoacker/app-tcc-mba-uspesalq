@@ -6,10 +6,10 @@ from domain.product.product_category_enum import ProductCategory
 
 
 class FindProductInputDto(BaseModel):
-    id: UUID
+    id: int
 
 class FindProductOutputDto(BaseModel):
-    id: UUID
+    id: int
     name: str	
     price: float
     category: ProductCategory

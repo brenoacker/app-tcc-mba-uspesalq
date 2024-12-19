@@ -6,12 +6,13 @@ from domain.product.product_category_enum import ProductCategory
 
 
 class UpdateProductInputDto(BaseModel):
-    name: str = None
-    price: float = None
-    category: ProductCategory = None
+    id: int
+    name: str
+    price: float
+    category: ProductCategory
 
 class UpdateProductOutputDto(BaseModel):
-    id: UUID
+    id: int
     name: str
     price: float
     category: ProductCategory

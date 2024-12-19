@@ -10,6 +10,11 @@ class RemoveCartUseCase(UseCaseInterface):
 
     def execute(self, input: RemoveCartInputDto) -> RemoveCartOutputDto:
 
+        cart_found = self.cart_repository.find_cart(cart_id=input.id, user_id=input.user_id)
+
+        if not cart_found:
+            raise ValueError("Cart not found")
+
         self.cart_repository.remove_cart(cart_id=input.id)
         
-        return RemoveCartOutputDto(id=input.id, user_id=input.user_id)
+        return RemoveCartOutputDto(id=input.id)

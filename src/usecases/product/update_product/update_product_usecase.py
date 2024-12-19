@@ -11,10 +11,11 @@ class UpdateProductUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, product_id: UUID, input: UpdateProductInputDto) -> UpdateProductOutputDto:
+    def execute(self, input: UpdateProductInputDto) -> UpdateProductOutputDto:
         
-        product = self.product_repository.find_product(product_id=product_id)
+        product = self.product_repository.find_product(product_id=input.id)
 
+        product.id = input.id
         product.name = input.name
         product.price = input.price
         product.category = input.category

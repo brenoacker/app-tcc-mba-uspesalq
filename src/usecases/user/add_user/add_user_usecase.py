@@ -15,6 +15,6 @@ class AddUserUseCase:
         
         user = User(id=uuid.uuid4(), name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
 
-        self.user_repository.add_user(user=user)
+        user_added = self.user_repository.add_user(user=user)
 
-        return AddUserOutputDto(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
+        return AddUserOutputDto(id=user_added.id, name=user_added.name, email=user_added.email, phone_number=user_added.phone_number, password=user_added.password)

@@ -1,3 +1,4 @@
+import traceback
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -45,19 +46,18 @@ def list_users(session: Session = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
         usecase = ListUsersUseCase(user_repository=user_repository)
-        output = usecase.execute(input=ListUsersInputDto())
+        output = usecase.execute()
         return output
 
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e  
     
 @router.patch("/{user_id}")
 def update_user(user_id: UUID, request: UpdateUserInputDto, session: Session = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
         user_found = user_repository.find_user(user_id=user_id)
-        if not user_found:
-            raise HTTPException(status_code=404, detail=f"User with id '{user_id}' not found")
         
         update_data = request.dict(exclude_unset=True)
         for key, value in update_data.items():
@@ -74,19 +74,22 @@ def update_user(user_id: UUID, request: UpdateUserInputDto, session: Session = D
             )
         )
         return output
-    except Exception as e:
+    except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
     
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", status_code=204)
 def delete_user(user_id: UUID, session: Session = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
-        user_found = user_repository.find_user(user_id=user_id)
-        if not user_found:
-            raise HTTPException(status_code=404, detail=f"User with id '{user_id}' not found")
+        user_repository.find_user(user_id=user_id)
+
         user_repository.delete_user(user_id=user_id)
-        return {"message": f"User with id '{user_id}' deleted successfully"}
-    except Exception as e:
+
+    except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
     

@@ -12,5 +12,8 @@ class FindProductUsecase(UseCaseInterface):
     def execute(self, input: FindProductInputDto) -> FindProductOutputDto:
         
         product = self.product_repository.find_product(product_id=input.id)
+
+        if not product:
+            raise ValueError(f"Product with id '{input.id}' not found")
         
         return FindProductOutputDto(id=product.id, name=product.name, price=product.price, category=product.category)

@@ -6,10 +6,9 @@ from sqlalchemy.orm import relationship
 from infrastructure.api.database import Base
 
 
-class CartItemModel(Base):
-    __tablename__ = "tb_cart_items"
+class CartModel(Base):
+    __tablename__ = "tb_carts"
 
     id = Column(UUID, primary_key=True, index=True)
-    cart_id = Column(UUID, ForeignKey("tb_carts.id", ondelete="CASCADE"), nullable=False)
-    product_id = Column(Integer, ForeignKey("tb_products.id"), nullable=False)
-    quantity = Column(Integer, nullable=False)
+    user_id = Column(UUID, ForeignKey("tb_users.id"))
+    total_price = Column(Float, nullable=False)

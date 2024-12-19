@@ -3,17 +3,18 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from usecases.cart.add_cart.add_cart_dto import CartItemDto
+from domain.cart.cart_entity import Cart
+from domain.product.product_entity import Product
 
 
+class UpdateCartItemDto(BaseModel):
+    product_id: int
+    quantity: int
+    
 class UpdateCartInputDto(BaseModel):
-    id: UUID
-    user_id: UUID
-    items: List[CartItemDto]
-    total_price: float
+    items: List[UpdateCartItemDto]
 
 class UpdateCartOutputDto(BaseModel):
     id: UUID
     user_id: UUID
-    items: List[CartItemDto]
     total_price: float

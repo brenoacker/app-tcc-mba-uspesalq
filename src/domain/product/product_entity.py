@@ -5,7 +5,7 @@ from domain.product.product_category_enum import ProductCategory
 
 class Product:
 
-    id: UUID
+    id: int
     name: str
     price: float
     category: ProductCategory
@@ -19,8 +19,8 @@ class Product:
 
     def validate(self):
 
-        if not isinstance(self.id, UUID):
-            raise Exception("id must be an UUID")
+        if not isinstance(self.id, int) or self.id <= 0:
+            raise Exception("id must be an integer greater than 0")
         
         if not isinstance(self.name, str) or len(self.name) == 0:
             raise Exception("name is required")
