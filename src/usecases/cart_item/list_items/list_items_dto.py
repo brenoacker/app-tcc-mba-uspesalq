@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 class ListItemsDto(BaseModel):
     id: UUID
-    user_id: UUID
+    cart_id: UUID
     product_id: int
     quantity: int
 

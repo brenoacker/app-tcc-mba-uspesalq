@@ -1,6 +1,7 @@
-
+import logging
 import traceback
 from uuid import UUID
+from venv import logger
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -26,20 +27,21 @@ from usecases.product.update_product.update_product_dto import \
 from usecases.product.update_product.update_product_usecase import \
     UpdateProductUseCase
 
+logger = logging.getLogger("uvicorn")
 router = APIRouter(prefix="/products", tags=["Products"])
 
 @router.post("/", status_code=201)
 def add_product(request: AddProductInputDto, session: Session = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
-        find_product_by_name = product_repository.find_product_by_name(name=request.name)
-        if find_product_by_name:
-            raise HTTPException(status_code=422, detail=f"Product '{request.name}' already registered")
         usecase = AddProductUseCase(product_repository=product_repository)
-        output = usecase.execute(input=AddProductInputDto(name=request.name, price=request.price, category=request.category))
+        output = usecase.execute(input=AddProductInputDto(id=request.id, name=request.name, price=request.price, category=request.category))
         return output
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
     except Exception as e:
-        raise e
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e  
     
 @router.get("/", status_code=200)
 def list_products(session: Session = Depends(get_session)):
@@ -51,21 +53,23 @@ def list_products(session: Session = Depends(get_session)):
 
     except Exception as e:
         error_trace = traceback.format_exc()
-        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
-    
+        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e    
+
 @router.get("/{product_id}", status_code=200)
-def find_product(product_id: UUID, session: Session = Depends(get_session)):
+def find_product(product_id: int, session: Session = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         usecase = FindProductUsecase(product_repository=product_repository)
         output = usecase.execute(input=FindProductInputDto(id=product_id))
         return output
 
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Product with id '{product_id}' not found") from e
+        raise HTTPException(status_code=500, detail=str(e)) from e
     
 @router.patch("/{product_id}", status_code=200)
-def update_product(product_id: UUID, request: UpdateProductInputDto, session: Session = Depends(get_session)):
+def update_product(product_id: int, request: UpdateProductInputDto, session: Session = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         product_found = product_repository.find_product(product_id=product_id)
@@ -78,18 +82,20 @@ def update_product(product_id: UUID, request: UpdateProductInputDto, session: Se
 
         usecase = UpdateProductUseCase(product_repository=product_repository)
         output = usecase.execute(
-            product_id=product_id,
             input=UpdateProductInputDto(
-            name=product_found.name,
-            price=product_found.price,
-            category=product_found.category
-        ))
+                id=product_found.id,
+                name=product_found.name,
+                price=product_found.price,
+                category=product_found.category
+            )
+        )
         return output
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e   
     
 @router.delete("/{product_id}", status_code=204)
-def delete_product(product_id: UUID, session: Session = Depends(get_session)):
+def delete_product(product_id: int, session: Session = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         product_found = product_repository.find_product(product_id=product_id)
@@ -102,3 +108,4 @@ def delete_product(product_id: UUID, session: Session = Depends(get_session)):
         return output
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
+    

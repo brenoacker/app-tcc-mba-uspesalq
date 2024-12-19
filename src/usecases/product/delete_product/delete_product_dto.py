@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class DeleteProductInputDto(BaseModel):
-    id: UUID
+    id: int
 
 class DeleteProductOutputDto(BaseModel):
-    id: UUID
+    id: int

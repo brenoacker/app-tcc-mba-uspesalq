@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from pydantic import BaseModel
 
 
@@ -7,6 +8,6 @@ class FindItemInputDto(BaseModel):
 
 class FindItemOutputDto(BaseModel):
     id: UUID
-    user_id: UUID
-    product_id: UUID
+    cart_id: UUID
+    product_id: int
     quantity: int

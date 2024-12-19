@@ -10,7 +10,7 @@ class ListProductsInputDto(BaseModel):
     pass
 
 class ListProductsDto(BaseModel):
-    id: UUID
+    id: int
     name: str	
     price: float
     category: ProductCategory

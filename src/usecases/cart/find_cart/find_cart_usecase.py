@@ -10,6 +10,10 @@ class FindCartUseCase(UseCaseInterface):
 
     def execute(self, input: FindCartInputDto) -> FindCartOutputDto:
 
-        cart = self.cart_repository.find_cart(user_id=input.user_id)
+        cart = self.cart_repository.find_cart(cart_id=input.id, user_id=input.user_id)
 
-        return FindCartOutputDto(id=cart.id, user_id=cart.user_id, items=cart.items, total_price=cart.total_price)
+        if not cart:
+            raise ValueError(f"Cart with id '{input.id}' not found")
+        
+
+        return FindCartOutputDto(id=cart.id, user_id=cart.user_id, total_price=cart.total_price)
