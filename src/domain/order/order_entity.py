@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import List
@@ -42,7 +43,10 @@ class Order:
         if len(self.items) == 0:
             raise Exception("items cannot be empty")
         
-        if not isinstance(self.total_amount, (float, int)) or self.total_amount < 0:
+        if not isinstance(self.total_amount, (float, int)):
+            raise Exception("total_amount must be float or int")
+        
+        if self.total_amount < 0:
             raise Exception("total_amount must be a non-negative number")
         
         if not isinstance(self.status, OrderStatus):
@@ -54,8 +58,8 @@ class Order:
         if not isinstance(self.updated_at, datetime):
             raise Exception("updated_at must be a datetime object")
         
-        if not isinstance(self.offer_id, (UUID, None)):
+        if self.offer_id is not None and not isinstance(self.offer_id, UUID):
             raise Exception("offer_id must be an UUID or None")
 
     def calculate_total_amount(self):
-        self.total_amount = sum(item.price * item.quantity for item in self.items)
+        return sum(item.price * item.quantity for item in self.items)
