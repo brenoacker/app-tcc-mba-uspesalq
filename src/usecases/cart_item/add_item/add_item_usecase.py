@@ -23,7 +23,7 @@ class AddItemUseCase(UseCaseInterface):
         self.cart_item_repository = cart_item_repository
         self.product_repository = product_repository
 
-    def execute(self, cart_id: UUID, input: AddItemInputDto) -> AddItemOutputDto:
+    def execute(self, user_id: UUID, cart_id: UUID, input: AddItemInputDto) -> AddItemOutputDto:
     
         # verificar se o produto existe
         product_found = self.product_repository.find_product_by_code(product_code=input.product_code)

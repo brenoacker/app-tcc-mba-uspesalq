@@ -9,17 +9,13 @@ from domain.payment.payment_status_enum import PaymentStatus
 
 
 class ExecutePaymentInputDto(BaseModel):
-    order_id: UUID
-    amount: float
     payment_method: PaymentMethod
     payment_card_gateway: PaymentCardGateway
 
 class ExecutePaymentOutputDto(BaseModel):
     id: UUID
+    user_id: UUID
     order_id: UUID
-    amount: float
     payment_method: PaymentMethod
     payment_card_gateway: PaymentCardGateway
     status: PaymentStatus
-    created_at: datetime
-    updated_at: datetime

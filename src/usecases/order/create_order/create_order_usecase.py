@@ -1,18 +1,64 @@
+import uuid
+from datetime import datetime
+
 from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.cart.cart_entity import Cart
+from domain.cart.cart_repository_interface import CartRepositoryInterface
+from domain.offer.offer_repository_interface import OfferRepositoryInterface
 from domain.order.order_entity import Order
 from domain.order.order_repository_interface import OrderRepositoryInterface
+from domain.order.order_status_enum import OrderStatus
+from domain.user.user_repository_interface import UserRepositoryInterface
 from usecases.order.create_order.create_order_dto import (CreateOrderInputDto,
                                                           CreateOrderOutputDto)
 
 
 class CreateOrderUseCase(UseCaseInterface):
-    def __init__(self, order_repository: OrderRepositoryInterface):
+    def __init__(self, order_repository: OrderRepositoryInterface, user_repository: UserRepositoryInterface, cart_repository: CartRepositoryInterface, offer_repository: OfferRepositoryInterface):
         self.order_repository = order_repository
+        self.cart_repository = cart_repository
+        self.user_repository = user_repository
+        self.offer_repository = offer_repository
 
-    def execute(self, input: CreateOrderInputDto) -> CreateOrderOutputDto:
+    def execute(self, user_id: uuid.UUID, input: CreateOrderInputDto) -> CreateOrderOutputDto:
         
-        order = Order(id=input.id, user_id=input.user_id, items=input.items, status=input.status, created_at=input.created_at, updated_at=input.updated_at, offer_id=input.offer_id)
+        user = self.user_repository.find_user(user_id=user_id)
 
-        created_order = self.order_repository.create_order(order=order)
+        if not user:
+            raise ValueError(f"User with id '{user_id}' not found")
+        
+        order_found: Order = self.order_repository.find_order_by_cart_id(cart_id=input.cart_id)
 
-        return CreateOrderOutputDto(id=created_order.id, user_id=created_order.user_id, items=created_order.items, status=created_order.status, created_at=created_order.created_at, updated_at=created_order.updated_at, offer_id=created_order.offer_id)
+        if order_found is not None:
+            if order_found.cart_id == input.cart_id:
+                raise ValueError(f"Order for cart_id '{input.cart_id}' already exists")
+        
+        cart: Cart = self.cart_repository.find_cart(cart_id=input.cart_id, user_id=user_id)
+
+        if not cart:
+            raise ValueError(f"Cart with id '{input.cart_id}' not found")
+
+        if input.offer_id is not None:
+            offer = self.offer_repository.find_offer(offer_id=input.offer_id)
+
+            if not offer:
+                raise ValueError(f"Offer with id '{input.offer_id}' not found")
+        
+            cart.total_price = offer.apply_discount(cart.total_price)
+
+        order = Order(id=uuid.uuid4(), user_id=user_id, cart_id=input.cart_id, total_price=cart.total_price, type=input.type, status=OrderStatus.PENDING, created_at=datetime.now(), updated_at=datetime.now(), offer_id=input.offer_id)
+
+        created_order: Order = self.order_repository.create_order(order=order)
+
+        return CreateOrderOutputDto(
+            id=created_order.id, 
+            user_id=created_order.user_id, 
+            cart_id=created_order.cart_id,
+            offer_id=created_order.offer_id,
+            type=created_order.type,
+            total_price=created_order.total_price,
+            status=created_order.status, 
+            created_at=created_order.created_at, 
+            updated_at=created_order.updated_at
+        )
+        

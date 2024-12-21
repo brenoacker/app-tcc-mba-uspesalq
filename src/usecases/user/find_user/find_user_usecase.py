@@ -13,4 +13,4 @@ class FindUserUseCase(UseCaseInterface):
         
         user = self.user_repository.find_user(user_id=input.id)
 
-        return FindUserOutputDto(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
+        return FindUserOutputDto(id=user.id, name=user.name, email=user.email, age=user.age, gender=user.gender, phone_number=user.phone_number, password=user.password)

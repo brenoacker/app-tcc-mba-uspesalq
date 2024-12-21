@@ -12,4 +12,4 @@ class FindOrderUseCase(UseCaseInterface):
         
         order = self.order_repository.find_order(order_id=input.id)
         
-        return FindOrderOutputDto(id=order.id, user_id=order.user_id, items=order.items, status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
+        return FindOrderOutputDto(id=order.id, user_id=order.user_id, type=order.type ,status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)

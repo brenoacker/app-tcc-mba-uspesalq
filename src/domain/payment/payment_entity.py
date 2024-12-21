@@ -11,23 +11,17 @@ class Payment:
     id: UUID
     order_id: UUID
     user_id: UUID
-    amount: float
     payment_method: PaymentMethod
     payment_card_gateway: PaymentCardGateway
     status: PaymentStatus
-    created_at: datetime
-    updated_at: datetime
 
-    def __init__(self, id: UUID, order_id: UUID, user_id: UUID, amount: float, payment_method: PaymentMethod, status: PaymentStatus, created_at: datetime, updated_at: datetime, payment_card_gateway: PaymentCardGateway = None):
+    def __init__(self, id: UUID, order_id: UUID, user_id: UUID, payment_method: PaymentMethod, status: PaymentStatus, payment_card_gateway: PaymentCardGateway = None):
         self.id = id
         self.order_id = order_id
         self.user_id = user_id
-        self.amount = amount
         self.payment_method = payment_method
         self.payment_card_gateway = payment_card_gateway
         self.status = status
-        self.created_at = created_at
-        self.updated_at = updated_at
         self.validate()
 
     def validate(self):
@@ -40,9 +34,6 @@ class Payment:
         if not isinstance(self.user_id, UUID):
             raise Exception("user_id must be an UUID")
         
-        if not isinstance(self.amount, (float, int)) or self.amount <= 0:
-            raise Exception("amount must be a positive number")
-        
         if not isinstance(self.payment_method, PaymentMethod):
             raise Exception("payment_method must be an instance of PaymentMethod")
         
@@ -52,8 +43,3 @@ class Payment:
         if not isinstance(self.status, PaymentStatus):
             raise Exception("status must be an instance of PaymentStatus")
         
-        if not isinstance(self.created_at, datetime):
-            raise Exception("created_at must be a datetime object")
-        
-        if not isinstance(self.updated_at, datetime):
-            raise Exception("updated_at must be a datetime object")

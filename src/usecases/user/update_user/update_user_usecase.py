@@ -14,8 +14,8 @@ class UpdateUserUseCase(UseCaseInterface):
 
     def execute(self, id: UUID, input: UpdateUserInputDto) -> UpdateUserOutputDto:
         
-        user = User(id=id, name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
+        user = User(id=id, name=input.name, email=input.email, age=input.age, gender=input.gender, phone_number=input.phone_number, password=input.password)
 
         self.user_repository.update_user(user=user)
 
-        return UpdateUserOutputDto(id=id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
+        return UpdateUserOutputDto(id=id, name=user.name, email=user.email, age=user.age, gender=user.gender, phone_number=user.phone_number, password=user.password)

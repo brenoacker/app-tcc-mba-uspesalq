@@ -6,16 +6,14 @@ from domain.offer.offer_type_enum import OfferType
 
 class Offer:
 
-    id: UUID
-    product_id: UUID
+    id: int
     discount_type: OfferType
-    discount_value: float | int
+    discount_value: float
     start_date: datetime
     end_date: datetime
     
-    def __init__(self, id: UUID, product_id: UUID, start_date: datetime, end_date: datetime, discount_type: OfferType, discount_value: float = None):
+    def __init__(self, id: int, start_date: datetime, end_date: datetime, discount_type: OfferType, discount_value: float):
         self.id = id
-        self.product_id = product_id
         self.discount_type = discount_type
         self.discount_value = discount_value
         self.start_date = start_date
@@ -24,16 +22,16 @@ class Offer:
 
     def validate(self):
 
-        if not isinstance(self.id, UUID):
-            raise Exception("id must be an UUID")
+        if not isinstance(self.id, int):
+            raise Exception("id must be an integer")
         
-        if not isinstance(self.product_id, UUID):
-            raise Exception("product_id must be an UUID")
+        if self.id <= 0:
+            raise Exception("id must be greater than 0")
         
         if not isinstance(self.discount_type, OfferType):
             raise Exception("discount_type must be an instance of OfferType")
         
-        if not isinstance(self.discount_value, (float, int)) or self.discount_value < 0:
+        if not isinstance(self.discount_value, float) or self.discount_value < 0:
             raise Exception("discount_value must be a positive number")
         
         if not isinstance(self.start_date, datetime):
@@ -59,7 +57,5 @@ class Offer:
                 return 0
             else:
                 return price - self.discount_value
-        else:
-            raise Exception("Invalid discount type")
         
 

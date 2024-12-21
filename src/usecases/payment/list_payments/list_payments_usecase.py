@@ -13,4 +13,7 @@ class ListPaymentsUseCase(UseCaseInterface):
         
         payments = self.payment_repository.list_payments(user_id=input.user_id)
 
+        if payments is None:
+            return ListPaymentsOutputDto(payments=[])
+
         return ListPaymentsOutputDto(payments=payments)
