@@ -23,6 +23,45 @@ def test_user_creation():
     assert user.phone_number == phone_number
     assert user.password == password
 
+def test_user_with_invalid_age():
+    user_id = uuid4()
+    name = "Test User"
+    email = "test@example.com"
+    age = "1"
+    gender = UserGender.MALE
+    phone_number = "1234567890"
+    password = "securepassword"
+
+    with pytest.raises(Exception) as excinfo:
+        User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
+    assert str(excinfo.value) == "age must be an integer"
+
+def test_user_with_age_under_18():
+    user_id = uuid4()
+    name = "Test User"
+    email = "test@example.com"
+    age = 15
+    gender = UserGender.MALE
+    phone_number = "1234567890"
+    password = "securepassword"
+
+    with pytest.raises(Exception) as excinfo:
+        User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
+    assert str(excinfo.value) == "age must be greater than 18"
+
+def test_user_with_invalid_gender():
+    user_id = uuid4()
+    name = "Test User"
+    email = "test@example.com"
+    age = 20
+    gender = "supermale"
+    phone_number = "1234567890"
+    password = "securepassword"
+
+    with pytest.raises(Exception) as excinfo:
+        User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
+    assert str(excinfo.value) == "gender must be an instance of UserGender"
+
 def test_user_invalid_id():
     name = "Test User"
     email = "test@example.com"
