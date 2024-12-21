@@ -17,7 +17,7 @@ from usecases.user.update_user.update_user_usecase import UpdateUserUseCase
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.post("/")
+@router.post("/", status_code=201)
 def add_user(request: AddUserInputDto, session: Session = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
@@ -28,7 +28,7 @@ def add_user(request: AddUserInputDto, session: Session = Depends(get_session)):
         output = usecase.execute(input=request)
         return output
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 @router.get("/{user_id}")
 def find_user(user_id: UUID, session: Session = Depends(get_session)):
@@ -47,6 +47,12 @@ def list_users(session: Session = Depends(get_session)):
         user_repository = UserRepository(session=session)
         usecase = ListUsersUseCase(user_repository=user_repository)
         output = usecase.execute()
+        user_ids = [user.id for user in output.users]
+        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
+        with open("user_ids.txt", "w") as f:
+            for user_id in user_ids:
+                f.write(f"{user_id}\n")
+
         return output
 
     except Exception as e:

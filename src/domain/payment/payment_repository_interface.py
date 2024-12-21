@@ -14,3 +14,11 @@ class PaymentRepositoryInterface(ABC):
     @abstractmethod
     def list_payments(self, user_id: UUID) -> List[Payment]:
         raise NotImplementedError
+
+    @abstractmethod
+    def list_all_payments(self) -> List[Payment]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find_payment(self, payment_id: int, user_id: UUID) -> Payment:
+        raise NotImplementedError

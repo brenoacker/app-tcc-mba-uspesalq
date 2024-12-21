@@ -12,7 +12,7 @@ class OfferRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_offer(self, offer_id: UUID) -> Offer:
+    def find_offer(self, offer_id: int) -> Offer:
         raise NotImplementedError
 
     @abstractmethod
@@ -20,5 +20,5 @@ class OfferRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def remove_offer(self, offer_id: UUID) -> None:
+    def remove_offer(self, offer_id: int) -> None:
         raise NotImplementedError

@@ -15,12 +15,9 @@ class ListPaymentsInputDto(BaseModel):
 class ListPaymentsDto(BaseModel):
     id: UUID
     order_id: UUID
-    amount: float
     payment_method: PaymentMethod
     payment_card_gateway: PaymentCardGateway
     status: PaymentStatus
-    created_at: datetime
-    updated_at: datetime
 
 class ListPaymentsOutputDto(BaseModel):
     payments: List[ListPaymentsDto]

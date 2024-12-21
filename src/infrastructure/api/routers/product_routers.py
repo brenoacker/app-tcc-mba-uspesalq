@@ -49,8 +49,13 @@ def list_products(session: Session = Depends(get_session)):
         product_repository = ProductRepository(session=session)
         usecase = ListProductsUseCase(product_repository=product_repository)
         output = usecase.execute()
+        
+        user_ids = [user.id for user in output.products]
+        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
+        with open("product_ids.txt", "w") as f:
+            for user_id in user_ids:
+                f.write(f"{user_id}\n")
         return output
-
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e    

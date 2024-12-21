@@ -13,8 +13,8 @@ class AddUserUseCase:
 
     def execute(self, input: AddUserInputDto) -> AddUserOutputDto:
         
-        user = User(id=uuid.uuid4(), name=input.name, email=input.email, phone_number=input.phone_number, password=input.password)
+        user = User(id=uuid.uuid4(), name=input.name, email=input.email, age=input.age, gender=input.gender, phone_number=input.phone_number, password=input.password)
 
         user_added = self.user_repository.add_user(user=user)
 
-        return AddUserOutputDto(id=user_added.id, name=user_added.name, email=user_added.email, phone_number=user_added.phone_number, password=user_added.password)
+        return AddUserOutputDto(id=user_added.id, name=user_added.name, email=user_added.email, age=user_added.age, gender=user_added.gender, phone_number=user_added.phone_number, password=user_added.password)

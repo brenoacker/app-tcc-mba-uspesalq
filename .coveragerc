@@ -1,0 +1,4 @@
+[run]
+omit =
+    src/infrastructure/logging_config.py
+    */*interface.py

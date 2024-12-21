@@ -19,6 +19,6 @@ class ListUsersUseCase(UseCaseInterface):
         if not users:
             return ListUsersOutputDto(users=[])
 
-        users_dto = [UserDto(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password) for user in users]
+        users_dto = [UserDto(id=user.id, name=user.name, email=user.email, age=user.age, gender=user.gender, phone_number=user.phone_number, password=user.password) for user in users]
         
         return ListUsersOutputDto(users=users_dto)

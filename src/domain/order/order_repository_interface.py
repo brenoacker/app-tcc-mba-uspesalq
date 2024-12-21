@@ -14,6 +14,10 @@ class OrderRepositoryInterface(ABC):
     @abstractmethod
     def find_order(self, order_id: UUID) -> Order:
         raise NotImplementedError
+    
+    @abstractmethod
+    def find_order_by_cart_id(self, cart_id: UUID) -> Order:
+        raise NotImplementedError
 
     @abstractmethod
     def update_order(self, order: Order) -> Order:
@@ -21,6 +25,10 @@ class OrderRepositoryInterface(ABC):
 
     @abstractmethod
     def list_orders(self, user_id: UUID) -> List[Order]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def list_all_orders(self) -> List[Order]:
         raise NotImplementedError
     
     @abstractmethod

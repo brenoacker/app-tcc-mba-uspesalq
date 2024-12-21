@@ -28,12 +28,12 @@ from usecases.user.find_user.find_user_usecase import FindUserUseCase
 router = APIRouter(prefix="/cart_items", tags=["CartItems"])
 
 # @router.post("/", status_code=201)
-# def add_cart_item(request: AddItemInputDto, cart_id: UUID = Header(...), session: Session = Depends(get_session)):
+# def add_cart_item(request: AddItemInputDto, cart_id: UUID = Header(...), user_id: UUID = Header(...), session: Session = Depends(get_session)):
 #     try:
 #         cart_item_repository = CartItemRepository(session=session)
 #         product_repository = ProductRepository(session=session)
 #         usecase = AddItemUseCase(cart_item_repository=cart_item_repository, product_repository=product_repository)
-#         output = usecase.execute(cart_id=cart_id, input=AddItemInputDto(product_code=request.product_code, quantity=request.quantity))
+#         output = usecase.execute(cart_id=cart_id, user_id=user_id, input=AddItemInputDto(product_code=request.product_code, quantity=request.quantity))
 #         return output
     
 #     except ValueError as e:

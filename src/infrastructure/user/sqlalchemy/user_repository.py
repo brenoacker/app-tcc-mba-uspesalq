@@ -16,12 +16,12 @@ class UserRepository(UserRepositoryInterface):
 
     def add_user(self, user: User) -> User:
 
-        user_model = UserModel(id=user.id, name=user.name, email=user.email, phone_number=user.phone_number, password=user.password)
+        user_model = UserModel(id=user.id, name=user.name, email=user.email, age=user.age, gender=user.gender, phone_number=user.phone_number, password=user.password)
 
         self.session.add(user_model)
         self.session.commit()
 
-        return User(id=user_model.id, name=user_model.name, email=user_model.email, phone_number=user_model.phone_number, password=user_model.password)
+        return User(id=user_model.id, name=user_model.name, email=user_model.email, age=user_model.age, gender=user_model.gender, phone_number=user_model.phone_number, password=user_model.password)
 
     def find_user(self, user_id: UUID) -> User:
 
@@ -30,7 +30,7 @@ class UserRepository(UserRepositoryInterface):
         if not user_in_db:
             raise ValueError(f"User with id '{user_id}' not found")
         
-        user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email, phone_number=user_in_db.phone_number, password=user_in_db.password)
+        user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email, age=user_in_db.age, gender=user_in_db.gender, phone_number=user_in_db.phone_number, password=user_in_db.password)
 
         return user
     
@@ -40,7 +40,7 @@ class UserRepository(UserRepositoryInterface):
         if not user_in_db:
             return None
        
-        user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email, phone_number=user_in_db.phone_number, password=user_in_db.password)
+        user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email, age=user_in_db.age, gender=user_in_db.gender, phone_number=user_in_db.phone_number, password=user_in_db.password)
 
         return user
 
@@ -58,12 +58,12 @@ class UserRepository(UserRepositoryInterface):
                 id=user_in_db.id, 
                 name=user_in_db.name, 
                 email=user_in_db.email, 
+                age=user_in_db.age,
+                gender=user_in_db.gender,
                 phone_number=user_in_db.phone_number, 
                 password=user_in_db.password
             ))
 
-        for user in users:
-            logger.info(f"Id: {user.id} | name: {user.name} | password: {user.password}")
         return users
 
     def update_user(self, user: User) -> None:
@@ -72,6 +72,8 @@ class UserRepository(UserRepositoryInterface):
             {
                 "name": user.name,
                 "email": user.email,
+                "age": user.age,
+                "gender": user.gender,
                 "phone_number": user.phone_number,
                 "password": user.password
             }
