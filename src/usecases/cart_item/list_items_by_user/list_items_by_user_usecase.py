@@ -2,7 +2,7 @@ from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.cart_item.cart_item_repository_interface import \
     CartItemRepositoryInterface
 from usecases.cart_item.list_items_by_user.list_items_by_user_dto import (
-    ListItemsByUserInputDto, ListItemsByUserOutputDto)
+    ListItemsByUserDto, ListItemsByUserInputDto, ListItemsByUserOutputDto)
 
 
 class ListItemsByUserUseCase(UseCaseInterface):
@@ -11,6 +11,6 @@ class ListItemsByUserUseCase(UseCaseInterface):
 
     def execute(self, input: ListItemsByUserInputDto) -> ListItemsByUserOutputDto:
         
-        items = self.cart_item_repository.list_items_by_user_id(user_id=input.user_id)
+        items = self.cart_item_repository.list_items_by_user(user_id=input.user_id)
         
-        return ListItemsByUserOutputDto(items=items)
+        return ListItemsByUserOutputDto(items=[ListItemsByUserDto(id=item.id, cart_id=item.cart_id, product_id=item.product_id, quantity=item.quantity) for item in items])

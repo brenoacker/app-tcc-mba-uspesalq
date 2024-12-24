@@ -7,8 +7,6 @@ from uuid import UUID
 
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
-from domain.order_item.order_item_entity import OrderItem
-from domain.product.product_entity import Product
 
 
 class Order:

@@ -15,6 +15,9 @@ class UpdateProductUseCase(UseCaseInterface):
         
         product = self.product_repository.find_product(product_id=input.id)
 
+        if not product:
+            raise ValueError(f"Product with id '{input.id}' not found")
+
         product.id = input.id
         product.name = input.name
         product.price = input.price

@@ -2,7 +2,7 @@ from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.payment.payment_repository_interface import \
     PaymentRepositoryInterface
 from usecases.payment.list_payments.list_payments_dto import (
-    ListPaymentsInputDto, ListPaymentsOutputDto)
+    ListPaymentsDto, ListPaymentsInputDto, ListPaymentsOutputDto)
 
 
 class ListPaymentsUseCase(UseCaseInterface):
@@ -16,4 +16,6 @@ class ListPaymentsUseCase(UseCaseInterface):
         if payments is None:
             return ListPaymentsOutputDto(payments=[])
 
-        return ListPaymentsOutputDto(payments=payments)
+        list_payments = [ListPaymentsDto(id=payment.id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status) for payment in payments]
+        
+        return ListPaymentsOutputDto(payments=list_payments)

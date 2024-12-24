@@ -32,5 +32,5 @@ class OrderRepositoryInterface(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def remove_order(self, order_id: UUID) -> None:
+    def remove_order(self, order_id: UUID) -> UUID:
         raise NotImplementedError

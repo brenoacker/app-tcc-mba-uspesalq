@@ -7,7 +7,6 @@ import pytest
 from domain.order.order_entity import Order
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
-from domain.order_item.order_item_entity import OrderItem
 
 
 def test_order_creation():

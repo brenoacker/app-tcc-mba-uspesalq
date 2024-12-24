@@ -13,6 +13,6 @@ class FindOfferUseCase(UseCaseInterface):
         offer = self.offer_repository.find_offer(offer_id=input.id)
 
         if offer is None:
-            return ValueError(f"Offer with id '{input.id}' not found")
+            raise ValueError(f"Offer with id '{input.id}' not found")
         
         return offer

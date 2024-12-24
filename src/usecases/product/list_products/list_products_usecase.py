@@ -15,4 +15,9 @@ class ListProductsUseCase(UseCaseInterface):
 
         products = self.product_repository.list_products()
 
-        return ListProductsOutputDto(products=products)
+        if products is None:
+            return ListProductsOutputDto(products=[])
+
+        products_list = [ListProductsDto(id=product.id, name=product.name, price=product.price, category=product.category) for product in products]
+
+        return ListProductsOutputDto(products=products_list)

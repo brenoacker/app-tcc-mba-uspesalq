@@ -11,5 +11,8 @@ class FindOrderUseCase(UseCaseInterface):
     def execute(self, input: FindOrderInputDto) -> FindOrderOutputDto:
         
         order = self.order_repository.find_order(order_id=input.id)
+
+        if order is None:
+            raise ValueError(f"Order with id '{input.id}' not found")
         
-        return FindOrderOutputDto(id=order.id, user_id=order.user_id, type=order.type ,status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
+        return FindOrderOutputDto(id=order.id, user_id=order.user_id, cart_id= order.cart_id, total_price=order.total_price, type=order.type ,status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
