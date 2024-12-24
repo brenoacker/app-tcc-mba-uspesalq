@@ -9,8 +9,8 @@ class ListItemsByUserInputDto(BaseModel):
 
 class ListItemsByUserDto(BaseModel):
     id: UUID
-    user_id: UUID
-    product_code: int
+    cart_id: UUID
+    product_id: int
     quantity: int
 
 class ListItemsByUserOutputDto(BaseModel):

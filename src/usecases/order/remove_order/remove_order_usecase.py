@@ -8,9 +8,12 @@ class RemoveOrderUseCase(UseCaseInterface):
     def __init__(self, order_repository: OrderRepositoryInterface):
         self.order_repository = order_repository
 
-    def remove_order(self, input: RemoveOrderInputDto) -> RemoveOrderOutputDto:
+    def execute(self, input: RemoveOrderInputDto) -> RemoveOrderOutputDto:
         
-        self.order_repository.remove_order(order_id=input.id)
+        order_id = self.order_repository.remove_order(order_id=input.id)
+
+        if order_id is None:
+            raise ValueError(f"Order with id '{input.id}' not found")
 
         return RemoveOrderOutputDto(id=input.id)
     

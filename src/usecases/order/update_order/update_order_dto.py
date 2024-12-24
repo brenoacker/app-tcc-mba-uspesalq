@@ -6,14 +6,13 @@ from pydantic import BaseModel
 
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
-from usecases.order.create_order.create_order_dto import (OrderItemDto,
-                                                          OrderStatusDto)
 
 
 class UpdateOrderInputDto(BaseModel):
     id: UUID
     user_id: UUID
-    offer_id: UUID
+    cart_id: UUID
+    offer_id: int
     type: OrderType
     total_price: float
     status: OrderStatus
@@ -23,7 +22,8 @@ class UpdateOrderInputDto(BaseModel):
 class UpdateOrderOutputDto(BaseModel):
     id: UUID
     user_id: UUID
-    offer_id: UUID
+    cart_id: UUID
+    offer_id: int
     type: OrderType
     total_price: float
     status: OrderStatus
