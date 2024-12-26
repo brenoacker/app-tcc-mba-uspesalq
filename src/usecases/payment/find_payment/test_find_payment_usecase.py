@@ -18,8 +18,13 @@ def payment_repository():
     return Mock()
 
 @pytest.fixture
-def find_payment_usecase(payment_repository):
-    return FindPaymentUseCase(payment_repository)
+def user_repository():
+    return Mock()
+
+@pytest.fixture
+def find_payment_usecase(payment_repository, user_repository):
+    return FindPaymentUseCase(payment_repository, user_repository)
+
 
 def test_find_payment_success(find_payment_usecase, payment_repository):
     payment_id = uuid4()
@@ -36,7 +41,7 @@ def test_find_payment_success(find_payment_usecase, payment_repository):
     assert output_dto.payment_method == PaymentMethod.CARD
     assert output_dto.payment_card_gateway == PaymentCardGateway.ADYEN
     assert output_dto.status == PaymentStatus.PAID
-    payment_repository.find_payment.assert_called_once_with(payment_id=payment_id, user_id=user_id)
+    payment_repository.find_payment.assert_called_once_with(payment_id=payment_id)
 
 def test_find_payment_not_found(find_payment_usecase, payment_repository):
     payment_id = uuid4()
@@ -48,4 +53,4 @@ def test_find_payment_not_found(find_payment_usecase, payment_repository):
     with pytest.raises(ValueError) as excinfo:
         find_payment_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"Payment with id {payment_id} not found"
-    payment_repository.find_payment.assert_called_once_with(payment_id=payment_id, user_id=user_id)
+    payment_repository.find_payment.assert_called_once_with(payment_id=payment_id)
