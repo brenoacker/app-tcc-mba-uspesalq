@@ -28,14 +28,14 @@ class OrderRepository(OrderRepositoryInterface):
             offer_id=order.offer_id
         )
 
-    def find_order(self, order_id: UUID) -> Order:
+    def find_order(self, order_id: UUID, user_id: UUID) -> Order:
 
-        order =  self.session.query(OrderModel).filter(OrderModel.id == order_id).first()
+        order =  self.session.query(OrderModel).filter(OrderModel.id == order_id, OrderModel.user_id == user_id).first()
 
         if not order:
             return None
         
-        return Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=order.total_price, status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
+        return Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
 
     def find_order_by_cart_id(self, cart_id: UUID) -> Order:
         
@@ -44,7 +44,7 @@ class OrderRepository(OrderRepositoryInterface):
         if not order:
             return None
         
-        return Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=order.total_price, status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
+        return Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
 
     def update_order(self, order: Order) -> Order:
 
@@ -61,12 +61,12 @@ class OrderRepository(OrderRepositoryInterface):
         return order
     
     def list_orders(self, user_id) -> List[Order]:
-        orders = self.session.query(OrderModel).filter(OrderModel.user_id == user_id).all()
+        orders: OrderModel = self.session.query(OrderModel).filter(OrderModel.user_id == user_id).all()
 
         if orders is None:
             return None
         
-        return [Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=order.total_price, status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id) for order in orders]
+        return [Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id) for order in orders]
         
     def list_all_orders(self) -> List[Order]:
         orders: OrderModel = self.session.query(OrderModel).all()
@@ -74,7 +74,7 @@ class OrderRepository(OrderRepositoryInterface):
         if orders is None:
             return None
         
-        return [Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=order.total_price, status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id) for order in orders]
+        return [Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id) for order in orders]
 
     def remove_order(self, order_id) -> UUID:
         order = self.find_order(order_id)

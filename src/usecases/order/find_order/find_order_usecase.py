@@ -10,7 +10,7 @@ class FindOrderUseCase(UseCaseInterface):
 
     def execute(self, input: FindOrderInputDto) -> FindOrderOutputDto:
         
-        order = self.order_repository.find_order(order_id=input.id)
+        order = self.order_repository.find_order(order_id=input.id, user_id=input.user_id)
 
         if order is None:
             raise ValueError(f"Order with id '{input.id}' not found")

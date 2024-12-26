@@ -30,7 +30,7 @@ class ExecutePaymentUseCase(UseCaseInterface):
         if user is None:
             raise ValueError(f"User with id {user_id} not found")
         
-        order = self.order_repository.find_order(order_id)
+        order = self.order_repository.find_order(order_id=order_id, user_id=user_id)
 
         if order is None:
             raise ValueError(f"Order with id {order_id} not found")

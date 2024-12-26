@@ -10,6 +10,8 @@ from infrastructure.cart.sqlalchemy.cart_repository import CartRepository
 from infrastructure.offer.sqlalchemy.offer_repository import OfferRepository
 from infrastructure.order.sqlalchemy.order_repository import OrderRepository
 from infrastructure.user.sqlalchemy.user_repository import UserRepository
+from usecases.order.find_order.find_order_dto import FindOrderInputDto
+from usecases.order.find_order.find_order_usecase import FindOrderUseCase
 from usecases.order.create_order.create_order_dto import CreateOrderInputDto
 from usecases.order.create_order.create_order_usecase import CreateOrderUseCase
 from usecases.order.list_all_orders.list_all_orders_usecase import \
@@ -29,10 +31,11 @@ def create_order(request: CreateOrderInputDto, user_id: UUID = Header(...), sess
         usecase = CreateOrderUseCase(order_repository=order_repository, user_repository=user_repository, cart_repository=cart_repository, offer_repository=offer_repository)
         if not request.offer_id:
             request.offer_id = None
-        output = usecase.execute(user_id = user_id, input=CreateOrderInputDto(cart_id=request.cart_id, offer_id=request.offer_id))
+        output = usecase.execute(user_id = user_id, input=CreateOrderInputDto(type=request.type,cart_id=request.cart_id, offer_id=request.offer_id))
         return output
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
@@ -55,6 +58,20 @@ def list_all_orders(session: Session = Depends(get_session)):
         usecase = ListAllOrdersUseCase(order_repository=order_repository)
         output = usecase.execute()
         return output
+    except Exception as e:
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
+    
+@router.get("/{order_id}", status_code=200)
+def find_order(order_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+    try:
+        order_repository = OrderRepository(session=session)
+        usecase = FindOrderUseCase(order_repository=order_repository)
+        output = usecase.execute(input=FindOrderInputDto(id=order_id, user_id=user_id))
+        return output
+    except ValueError as e:
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e

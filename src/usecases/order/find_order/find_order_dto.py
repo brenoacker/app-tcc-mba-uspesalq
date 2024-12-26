@@ -10,6 +10,7 @@ from domain.order.order_type_enum import OrderType
 
 class FindOrderInputDto(BaseModel):
     id: UUID
+    user_id: UUID
 
 class FindOrderOutputDto(BaseModel):
     id: UUID

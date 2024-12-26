@@ -12,7 +12,7 @@ class OrderRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_order(self, order_id: UUID) -> Order:
+    def find_order(self, order_id: UUID, user_id: UUID) -> Order:
         raise NotImplementedError
     
     @abstractmethod
