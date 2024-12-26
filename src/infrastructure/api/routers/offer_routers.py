@@ -25,7 +25,6 @@ def add_offer(request: AddOfferInputDto, session: Session = Depends(get_session)
         output = usecase.execute(input=AddOfferInputDto(id=request.id, expiration_days=request.expiration_days ,discount_type=request.discount_type, discount_value=request.discount_value))
         return output
     except ValueError as e:
-        
         raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
         error_trace = traceback.format_exc()

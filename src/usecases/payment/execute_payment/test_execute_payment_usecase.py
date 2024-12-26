@@ -52,7 +52,7 @@ def test_execute_payment_success(execute_payment_usecase, payment_repository, us
     assert output_dto.payment_method == PaymentMethod.CARD
     assert output_dto.payment_card_gateway == PaymentCardGateway.ADYEN
     user_repository.find_user.assert_called_once_with(user_id)
-    order_repository.find_order.assert_called_once_with(order_id)
+    order_repository.find_order.assert_called_once_with(order_id=order_id, user_id=user_id)
     payment_repository.execute_payment.assert_called_once()
     order_repository.update_order.assert_called_once()
 
@@ -80,7 +80,7 @@ def test_execute_payment_order_not_found(execute_payment_usecase, user_repositor
         execute_payment_usecase.execute(order_id=order_id, user_id=user_id, input=input_dto)
     assert str(excinfo.value) == f"Order with id {order_id} not found"
     user_repository.find_user.assert_called_once_with(user_id)
-    order_repository.find_order.assert_called_once_with(order_id)
+    order_repository.find_order.assert_called_once_with(order_id=order_id, user_id=user_id)
 
 def test_execute_payment_order_already_confirmed(execute_payment_usecase, user_repository, order_repository):
     user_id = uuid4()
@@ -94,4 +94,4 @@ def test_execute_payment_order_already_confirmed(execute_payment_usecase, user_r
         execute_payment_usecase.execute(order_id=order_id, user_id=user_id, input=input_dto)
     assert str(excinfo.value) == f"Order with id {order_id} already confirmed"
     user_repository.find_user.assert_called_once_with(user_id)
-    order_repository.find_order.assert_called_once_with(order_id)
+    order_repository.find_order.assert_called_once_with(order_id=order_id, user_id=user_id)

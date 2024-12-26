@@ -20,5 +20,5 @@ class PaymentRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_payment(self, payment_id: int, user_id: UUID) -> Payment:
+    def find_payment(self, payment_id: UUID) -> Payment:
         raise NotImplementedError

@@ -20,10 +20,9 @@ class PaymentRepository(PaymentRepositoryInterface):
 
         return Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status)
 
-    def find_payment(self, payment_id: int, user_id: int) -> Payment:
+    def find_payment(self, payment_id: UUID) -> Payment:
         
-        # talvez tenha que usar o _and
-        payment_found = self.session.query(PaymentModel).filter(PaymentModel.id == payment_id, PaymentModel.user_id == user_id).first()
+        payment_found = self.session.query(PaymentModel).filter(PaymentModel.id == payment_id).first()
 
         if payment_found is None:
             return None

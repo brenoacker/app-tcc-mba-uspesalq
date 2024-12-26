@@ -57,7 +57,8 @@ def list_payments(user_id: UUID = Header(...), session: Session = Depends(get_se
 def find_payment(payment_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
-        usecase = FindPaymentUseCase(payment_repository=payment_repository)
+        user_repository = UserRepository(session=session)
+        usecase = FindPaymentUseCase(payment_repository=payment_repository, user_repository=user_repository)
         output = usecase.execute(input=FindPaymentInputDto(id=payment_id, user_id=user_id))
         return output
     except Exception as e:
