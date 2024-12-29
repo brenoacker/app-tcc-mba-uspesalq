@@ -1,7 +1,3 @@
-
-import uuid
-from http.client import HTTPException
-
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product

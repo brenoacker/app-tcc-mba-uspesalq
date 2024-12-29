@@ -5,8 +5,7 @@ from uuid import uuid4
 import pytest
 
 from domain.cart_item.cart_item_entity import CartItem
-from usecases.cart_item.find_item.find_item_dto import (FindItemInputDto,
-                                                        FindItemOutputDto)
+from usecases.cart_item.find_item.find_item_dto import (FindItemInputDto)
 from usecases.cart_item.find_item.find_item_usecase import FindItemUseCase
 
 

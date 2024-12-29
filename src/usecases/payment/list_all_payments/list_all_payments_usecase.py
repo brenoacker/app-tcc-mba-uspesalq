@@ -15,4 +15,4 @@ class ListAllPaymentsUseCase(UseCaseInterface):
         if payments is None:
             return ListAllPaymentsOutputDto(payments=[])
         
-        return ListAllPaymentsOutputDto(payments=[ListAllPaymentsDto(id=payment.id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway) for payment in payments])
+        return ListAllPaymentsOutputDto(payments=[ListAllPaymentsDto(id=payment.id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status) for payment in payments])

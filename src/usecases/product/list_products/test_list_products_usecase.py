@@ -1,13 +1,10 @@
 import random
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
 
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
-from usecases.product.list_products.list_products_dto import \
-    ListProductsOutputDto
 from usecases.product.list_products.list_products_usecase import \
     ListProductsUseCase
 
@@ -39,6 +36,14 @@ def test_list_products_success(list_products_usecase, product_repository):
 
 def test_list_products_empty(list_products_usecase, product_repository):
     product_repository.list_products.return_value = []
+    
+    output_dto = list_products_usecase.execute()
+    
+    assert len(output_dto.products) == 0
+    product_repository.list_products.assert_called_once()
+
+def test_list_products_none(list_products_usecase, product_repository):
+    product_repository.list_products.return_value = None
     
     output_dto = list_products_usecase.execute()
     

@@ -6,7 +6,7 @@ import pytest
 
 from domain.cart_item.cart_item_entity import CartItem
 from usecases.cart_item.update_item.update_item_dto import (
-    UpdateItemInputDto, UpdateItemOutputDto)
+    UpdateItemInputDto)
 from usecases.cart_item.update_item.update_item_usecase import \
     UpdateItemUseCase
 

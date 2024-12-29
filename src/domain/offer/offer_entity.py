@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import UUID
 
 from domain.offer.offer_type_enum import OfferType
 

@@ -1,5 +1,7 @@
+import random
 import uuid
 from datetime import datetime
+from time import sleep
 
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.cart.cart_entity import Cart
@@ -8,17 +10,22 @@ from domain.offer.offer_repository_interface import OfferRepositoryInterface
 from domain.order.order_entity import Order
 from domain.order.order_repository_interface import OrderRepositoryInterface
 from domain.order.order_status_enum import OrderStatus
+from domain.payment.payment_entity import Payment
+from domain.payment.payment_repository_interface import \
+    PaymentRepositoryInterface
+from domain.payment.payment_status_enum import PaymentStatus
 from domain.user.user_repository_interface import UserRepositoryInterface
 from usecases.order.create_order.create_order_dto import (CreateOrderInputDto,
                                                           CreateOrderOutputDto)
 
 
 class CreateOrderUseCase(UseCaseInterface):
-    def __init__(self, order_repository: OrderRepositoryInterface, user_repository: UserRepositoryInterface, cart_repository: CartRepositoryInterface, offer_repository: OfferRepositoryInterface):
+    def __init__(self, order_repository: OrderRepositoryInterface, user_repository: UserRepositoryInterface, cart_repository: CartRepositoryInterface, offer_repository: OfferRepositoryInterface, payment_repository: PaymentRepositoryInterface):
         self.order_repository = order_repository
         self.cart_repository = cart_repository
         self.user_repository = user_repository
         self.offer_repository = offer_repository
+        self.payment_repository = payment_repository
 
     def execute(self, user_id: uuid.UUID, input: CreateOrderInputDto) -> CreateOrderOutputDto:
         
@@ -49,6 +56,20 @@ class CreateOrderUseCase(UseCaseInterface):
         order = Order(id=uuid.uuid4(), user_id=user_id, cart_id=input.cart_id, total_price=cart.total_price, type=input.type, status=OrderStatus.PENDING, created_at=datetime.now(), updated_at=datetime.now(), offer_id=input.offer_id)
 
         created_order: Order = self.order_repository.create_order(order=order)
+
+        if not created_order:
+            raise ValueError(f"Failed to create order for cart with id '{input.cart_id}'")
+
+        if created_order.status != OrderStatus.PENDING:
+            raise ValueError(f"Order was created but with '{created_order.status}' status, not 'PENDING'")
+
+        created_payment = self.payment_repository.create_payment(payment=Payment(id=uuid.uuid4(), user_id=user_id, order_id=created_order.id, payment_method=None, payment_card_gateway=None, status=PaymentStatus.PENDING))
+
+        if not created_payment:
+            raise ValueError(f"Failed to create payment for order with id '{created_order.id}'")
+
+        if order.offer_id is not None:
+            sleep(random.randint(5,10)/10)
 
         return CreateOrderOutputDto(
             id=created_order.id, 

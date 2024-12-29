@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy import and_
-
 from domain.cart.cart_entity import Cart
 from domain.cart.cart_repository_interface import CartRepositoryInterface
 from infrastructure.cart.sqlalchemy.cart_model import CartModel
@@ -13,12 +11,7 @@ class CartRepository(CartRepositoryInterface):
         self.session = session
 
     def find_cart(self, cart_id: UUID, user_id: UUID):
-        cart = self.session.query(CartModel).filter(
-            and_(
-                CartModel.id == cart_id,
-                CartModel.user_id == user_id
-            )
-        ).first()
+        cart = self.session.query(CartModel).filter(CartModel.id == cart_id, CartModel.user_id == user_id).first()
         
         if not cart:
             return None
@@ -65,3 +58,8 @@ class CartRepository(CartRepositoryInterface):
         
         return [Cart(id=cart.id, user_id=cart.user_id, total_price=cart.total_price) for cart in carts]
     
+    def delete_all_carts(self):
+        self.session.query(CartModel).delete()
+        self.session.commit()
+        
+        return None

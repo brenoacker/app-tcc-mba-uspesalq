@@ -5,8 +5,6 @@ from uuid import uuid4
 import pytest
 
 from domain.cart_item.cart_item_entity import CartItem
-from usecases.cart_item.list_items.list_items_dto import (ListItemsDto,
-                                                          ListItemsOutputDto)
 from usecases.cart_item.list_items.list_items_usecase import ListItemsUseCase
 
 

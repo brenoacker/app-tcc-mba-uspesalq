@@ -4,9 +4,7 @@ from uuid import uuid4
 import pytest
 
 from domain.cart.cart_entity import Cart
-from usecases.cart.list_carts.list_carts_dto import (ListCartsDto,
-                                                     ListCartsInputDto,
-                                                     ListCartsOutputDto)
+from usecases.cart.list_carts.list_carts_dto import (ListCartsInputDto)
 from usecases.cart.list_carts.list_carts_usecase import ListCartsUseCase
 
 

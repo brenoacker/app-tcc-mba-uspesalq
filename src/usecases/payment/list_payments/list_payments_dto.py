@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 from uuid import UUID
 
@@ -15,8 +14,8 @@ class ListPaymentsInputDto(BaseModel):
 class ListPaymentsDto(BaseModel):
     id: UUID
     order_id: UUID
-    payment_method: PaymentMethod
-    payment_card_gateway: PaymentCardGateway
+    payment_method: PaymentMethod = None
+    payment_card_gateway: PaymentCardGateway = None
     status: PaymentStatus
 
 class ListPaymentsOutputDto(BaseModel):

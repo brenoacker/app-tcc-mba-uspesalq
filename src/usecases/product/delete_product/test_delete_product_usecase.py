@@ -1,11 +1,10 @@
 import random
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
 
 from usecases.product.delete_product.delete_product_dto import (
-    DeleteProductInputDto, DeleteProductOutputDto)
+    DeleteProductInputDto)
 from usecases.product.delete_product.delete_product_usecase import \
     DeleteProductUseCase
 

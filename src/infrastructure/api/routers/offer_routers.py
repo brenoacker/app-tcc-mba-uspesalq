@@ -1,8 +1,6 @@
-import logging
 import traceback
-from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from infrastructure.api.database import get_session

@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 import pytest
 
 from domain.product.product_category_enum import ProductCategory

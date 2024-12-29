@@ -1,7 +1,6 @@
-from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, Numeric,
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric,
                         String, TypeDecorator)
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType

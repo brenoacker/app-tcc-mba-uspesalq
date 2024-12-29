@@ -15,6 +15,6 @@ class FindPaymentOutputDto(BaseModel):
     id: UUID
     order_id: UUID
     user_id: UUID
-    payment_method: PaymentMethod
-    payment_card_gateway: PaymentCardGateway
+    payment_method: PaymentMethod = None
+    payment_card_gateway: PaymentCardGateway = None
     status: PaymentStatus
