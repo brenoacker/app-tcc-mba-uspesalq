@@ -1,13 +1,12 @@
 import random
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
 
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
 from usecases.product.update_product.update_product_dto import (
-    UpdateProductInputDto, UpdateProductOutputDto)
+    UpdateProductInputDto)
 from usecases.product.update_product.update_product_usecase import \
     UpdateProductUseCase
 

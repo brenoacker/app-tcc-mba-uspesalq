@@ -1,6 +1,4 @@
 from sqlalchemy import Column, DateTime, Float, Integer, String, TypeDecorator
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 from domain.offer.offer_type_enum import OfferType
 from infrastructure.api.database import Base

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import List
-from uuid import UUID
 
 from domain.offer.offer_entity import Offer
 
@@ -21,4 +20,8 @@ class OfferRepositoryInterface(ABC):
 
     @abstractmethod
     def remove_offer(self, offer_id: int) -> None:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def remove_all_offers(self) -> None:
         raise NotImplementedError

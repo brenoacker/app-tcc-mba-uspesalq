@@ -10,7 +10,6 @@ from usecases.user.add_user.add_user_dto import AddUserInputDto
 from usecases.user.add_user.add_user_usecase import AddUserUseCase
 from usecases.user.find_user.find_user_dto import FindUserInputDto
 from usecases.user.find_user.find_user_usecase import FindUserUseCase
-from usecases.user.list_users.list_users_dto import ListUsersInputDto
 from usecases.user.list_users.list_users_usecase import ListUsersUseCase
 from usecases.user.update_user.update_user_dto import UpdateUserInputDto
 from usecases.user.update_user.update_user_usecase import UpdateUserUseCase
@@ -47,12 +46,6 @@ def list_users(session: Session = Depends(get_session)):
         user_repository = UserRepository(session=session)
         usecase = ListUsersUseCase(user_repository=user_repository)
         output = usecase.execute()
-        user_ids = [user.id for user in output.users]
-        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
-        with open("user_ids.txt", "w") as f:
-            for user_id in user_ids:
-                f.write(f"{user_id}\n")
-
         return output
 
     except Exception as e:

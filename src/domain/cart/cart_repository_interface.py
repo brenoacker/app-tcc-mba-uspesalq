@@ -3,7 +3,6 @@ from typing import List
 from uuid import UUID
 
 from domain.cart.cart_entity import Cart
-from domain.cart_item.cart_item_entity import CartItem
 
 
 class CartRepositoryInterface(ABC):
@@ -26,5 +25,9 @@ class CartRepositoryInterface(ABC):
     
     @abstractmethod
     def list_carts(self, user_id: UUID) -> List[Cart]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def delete_all_carts(self) -> None:
         raise NotImplementedError
 

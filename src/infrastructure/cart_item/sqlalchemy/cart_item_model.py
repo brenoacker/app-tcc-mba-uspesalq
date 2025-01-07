@@ -1,7 +1,5 @@
-from sqlalchemy import (Column, Float, ForeignKey, Integer, String,
-                        TypeDecorator)
+from sqlalchemy import (Column, ForeignKey, Integer)
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 from infrastructure.api.database import Base
 

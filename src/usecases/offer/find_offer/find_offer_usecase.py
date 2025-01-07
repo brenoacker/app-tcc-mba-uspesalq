@@ -1,6 +1,5 @@
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.offer.offer_repository_interface import OfferRepositoryInterface
-from infrastructure.logging_config import logger
 from usecases.offer.find_offer.find_offer_dto import (FindOfferInputDto,
                                                       FindOfferOutputDto)
 

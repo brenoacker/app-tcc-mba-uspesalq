@@ -8,9 +8,7 @@ import pytest
 from domain.order.order_entity import Order
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
-from usecases.order.list_orders.list_orders_dto import (ListOrderDto,
-                                                        ListOrdersInputDto,
-                                                        ListOrdersOutputDto)
+from usecases.order.list_orders.list_orders_dto import (ListOrdersInputDto)
 from usecases.order.list_orders.list_orders_usecase import ListOrdersUseCase
 
 

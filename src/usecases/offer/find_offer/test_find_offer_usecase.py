@@ -1,14 +1,12 @@
 import random
 from datetime import datetime, timedelta
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
 
 from domain.offer.offer_entity import Offer
 from domain.offer.offer_type_enum import OfferType
-from usecases.offer.find_offer.find_offer_dto import (FindOfferInputDto,
-                                                      FindOfferOutputDto)
+from usecases.offer.find_offer.find_offer_dto import (FindOfferInputDto)
 from usecases.offer.find_offer.find_offer_usecase import FindOfferUseCase
 
 

@@ -1,7 +1,6 @@
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.cart_item.cart_item_repository_interface import \
     CartItemRepositoryInterface
-from infrastructure.logging_config import logger
 from usecases.cart_item.list_items.list_items_dto import (ListItemsDto,
                                                           ListItemsOutputDto)
 

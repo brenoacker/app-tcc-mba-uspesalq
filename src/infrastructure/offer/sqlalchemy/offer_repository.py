@@ -75,3 +75,10 @@ class OfferRepository(OfferRepositoryInterface):
         self.session.commit()
 
         return None
+    
+    def remove_all_offers(self) -> None:
+        
+        self.session.query(OfferModel).delete()
+        self.session.commit()
+
+        return None

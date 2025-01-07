@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from uuid import UUID
 
 from domain.product.product_entity import Product
 
@@ -29,4 +28,8 @@ class ProductRepositoryInterface(ABC):
     
     @abstractmethod
     def delete_product(self, product_id: int) -> None:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def delete_all_products(self) -> None:
         raise NotImplementedError

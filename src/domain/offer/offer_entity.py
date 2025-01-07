@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import UUID
 
 from domain.offer.offer_type_enum import OfferType
 
@@ -51,11 +50,11 @@ class Offer:
     
     def apply_discount(self, price: float):
         if self.discount_type == OfferType.PERCENTAGE:
-            return price - (price * self.discount_value / 100)
+            return float(price - (price * self.discount_value / 100))
         elif self.discount_type == OfferType.AMOUNT:
             if price < self.discount_value:
-                return 0
+                return float(0)
             else:
-                return price - self.discount_value
+                return float(price - self.discount_value)
         
 

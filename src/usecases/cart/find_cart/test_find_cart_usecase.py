@@ -4,8 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from domain.cart.cart_entity import Cart
-from usecases.cart.find_cart.find_cart_dto import (FindCartInputDto,
-                                                   FindCartOutputDto)
+from usecases.cart.find_cart.find_cart_dto import (FindCartInputDto)
 from usecases.cart.find_cart.find_cart_usecase import FindCartUseCase
 
 

@@ -2,8 +2,7 @@ from typing import Optional
 
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.user.user_repository_interface import UserRepositoryInterface
-from usecases.user.list_users.list_users_dto import (ListUsersInputDto,
-                                                     ListUsersOutputDto,
+from usecases.user.list_users.list_users_dto import (ListUsersOutputDto,
                                                      UserDto)
 
 

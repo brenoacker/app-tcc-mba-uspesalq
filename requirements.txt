@@ -4,3 +4,8 @@ pydantic==1.10.11
 psycopg2-binary
 sqlalchemy
 pytest
+debugpy==1.6.7
+requests
+pika
+pytest-cov
+pytest-mock

@@ -1,9 +1,5 @@
 from decimal import ROUND_HALF_UP, Decimal
-from typing import List
 from uuid import UUID
-
-from domain.cart_item.cart_item_entity import CartItem
-from domain.product.product_entity import Product
 
 
 class Cart:

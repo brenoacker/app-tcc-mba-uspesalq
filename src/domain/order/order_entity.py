@@ -1,8 +1,5 @@
-import uuid
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
-from enum import Enum
-from typing import List
 from uuid import UUID
 
 from domain.order.order_status_enum import OrderStatus

@@ -2,20 +2,16 @@ import uuid
 from uuid import UUID
 
 from domain.__seedwork.use_case_interface import UseCaseInterface
-from domain.cart.cart_repository_interface import CartRepositoryInterface
 from domain.cart_item.cart_item_entity import CartItem
 from domain.cart_item.cart_item_repository_interface import \
     CartItemRepositoryInterface
 from domain.product.product_repository_interface import \
     ProductRepositoryInterface
-from domain.user.user_repository_interface import UserRepositoryInterface
 from usecases.cart_item.add_item.add_item_dto import (AddItemInputDto,
                                                       AddItemOutputDto)
 from usecases.cart_item.update_item.update_item_dto import UpdateItemInputDto
 from usecases.cart_item.update_item.update_item_usecase import \
     UpdateItemUseCase
-from usecases.user.find_user.find_user_dto import FindUserInputDto
-from usecases.user.find_user.find_user_usecase import FindUserUseCase
 
 
 class AddItemUseCase(UseCaseInterface):

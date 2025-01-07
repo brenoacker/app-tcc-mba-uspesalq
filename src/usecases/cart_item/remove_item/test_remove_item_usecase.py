@@ -6,7 +6,7 @@ import pytest
 
 from domain.cart_item.cart_item_entity import CartItem
 from usecases.cart_item.remove_item.remove_item_dto import (
-    RemoveItemInputDto, RemoveItemOutputDto)
+    RemoveItemInputDto)
 from usecases.cart_item.remove_item.remove_item_usecase import \
     RemoveItemUseCase
 

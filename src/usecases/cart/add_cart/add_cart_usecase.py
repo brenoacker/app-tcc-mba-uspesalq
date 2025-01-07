@@ -11,7 +11,7 @@ from domain.product.product_repository_interface import \
     ProductRepositoryInterface
 from domain.user.user_repository_interface import UserRepositoryInterface
 from usecases.cart.add_cart.add_cart_dto import (AddCartInputDto,
-                                                 AddCartOutputDto, CartItemDto)
+                                                 AddCartOutputDto)
 
 
 class AddCartUseCase(UseCaseInterface):

@@ -5,7 +5,6 @@ from sqlalchemy.orm.session import Session
 
 from domain.user.user_entity import User
 from domain.user.user_repository_interface import UserRepositoryInterface
-from infrastructure.logging_config import logger
 from infrastructure.user.sqlalchemy.user_model import UserModel
 
 
@@ -25,7 +24,7 @@ class UserRepository(UserRepositoryInterface):
 
     def find_user(self, user_id: UUID) -> User:
 
-        user_in_db: UserModel = self.session.query(UserModel).get(user_id)
+        user_in_db: UserModel = self.session.query(UserModel).filter(UserModel.id == user_id).first()
         
         if not user_in_db:
             raise ValueError(f"User with id '{user_id}' not found")

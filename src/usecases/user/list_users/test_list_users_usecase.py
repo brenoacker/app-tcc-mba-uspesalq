@@ -5,7 +5,6 @@ import pytest
 
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
-from usecases.user.list_users.list_users_dto import ListUsersOutputDto, UserDto
 from usecases.user.list_users.list_users_usecase import ListUsersUseCase
 
 

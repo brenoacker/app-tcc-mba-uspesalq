@@ -3,9 +3,6 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from domain.cart.cart_entity import Cart
-from domain.product.product_entity import Product
-
 
 class UpdateCartItemDto(BaseModel):
     product_id: int

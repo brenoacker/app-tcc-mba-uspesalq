@@ -1,5 +1,4 @@
 import uuid
-from http.client import HTTPException
 
 from domain.user.user_entity import User
 from domain.user.user_repository_interface import UserRepositoryInterface

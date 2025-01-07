@@ -1,7 +1,4 @@
-from uuid import UUID
-
 from domain.__seedwork.use_case_interface import UseCaseInterface
-from domain.payment.payment_entity import Payment
 from domain.payment.payment_repository_interface import \
     PaymentRepositoryInterface
 from domain.user.user_repository_interface import UserRepositoryInterface

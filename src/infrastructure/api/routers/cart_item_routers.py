@@ -1,29 +1,15 @@
-import logging
 import traceback
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from infrastructure.api.database import get_session
 from infrastructure.cart_item.sqlalchemy.cart_item_repository import \
     CartItemRepository
-from infrastructure.product.sqlalchemy.product_repository import \
-    ProductRepository
-from infrastructure.user.sqlalchemy.user_repository import UserRepository
-from usecases.cart_item.add_item.add_item_dto import AddItemInputDto
-from usecases.cart_item.add_item.add_item_usecase import AddItemUseCase
 from usecases.cart_item.find_item.find_item_dto import FindItemInputDto
 from usecases.cart_item.find_item.find_item_usecase import FindItemUseCase
 from usecases.cart_item.list_items.list_items_usecase import ListItemsUseCase
-from usecases.cart_item.remove_item.remove_item_dto import RemoveItemInputDto
-from usecases.cart_item.remove_item.remove_item_usecase import \
-    RemoveItemUseCase
-from usecases.cart_item.update_item.update_item_dto import UpdateItemInputDto
-from usecases.cart_item.update_item.update_item_usecase import \
-    UpdateItemUseCase
-from usecases.user.find_user.find_user_dto import FindUserInputDto
-from usecases.user.find_user.find_user_usecase import FindUserUseCase
 
 router = APIRouter(prefix="/cart_items", tags=["CartItems"])
 

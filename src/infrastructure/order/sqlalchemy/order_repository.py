@@ -5,6 +5,7 @@ from uuid import UUID
 from domain.order.order_entity import Order
 from domain.order.order_repository_interface import OrderRepositoryInterface
 from domain.order.order_status_enum import OrderStatus
+from domain.order.order_type_enum import OrderType
 from infrastructure.order.sqlalchemy.order_model import OrderModel
 
 
@@ -22,7 +23,7 @@ class OrderRepository(OrderRepositoryInterface):
             cart_id=order.cart_id, 
             total_price=order.total_price, 
             type=order.type,
-            status=order.status, 
+            status=OrderStatus(order.status), 
             created_at=order.created_at, 
             updated_at=order.updated_at, 
             offer_id=order.offer_id
@@ -51,14 +52,14 @@ class OrderRepository(OrderRepositoryInterface):
         self.session.query(OrderModel).filter(OrderModel.id == OrderModel.id).update(
             {
                 "type": order.type,
-                "total_price": order.total_price,
-                "status": OrderStatus(order.status),
-                "updated_at": datetime.now(),
+                "total_price": float(order.total_price),
+                "status": order.status,
+                "updated_at": order.updated_at,
             }
         )
         self.session.commit()
         
-        return order
+        return Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id)
     
     def list_orders(self, user_id) -> List[Order]:
         orders: OrderModel = self.session.query(OrderModel).filter(OrderModel.user_id == user_id).all()
@@ -76,8 +77,8 @@ class OrderRepository(OrderRepositoryInterface):
         
         return [Order(id=order.id, user_id=order.user_id, cart_id=order.cart_id, type=order.type, total_price=float(order.total_price), status=order.status, created_at=order.created_at, updated_at=order.updated_at, offer_id=order.offer_id) for order in orders]
 
-    def remove_order(self, order_id) -> UUID:
-        order = self.find_order(order_id)
+    def remove_order(self, order_id, user_id) -> UUID:
+        order = self.find_order(order_id=order_id, user_id=user_id)
 
         if not order:
             return None
@@ -86,3 +87,9 @@ class OrderRepository(OrderRepositoryInterface):
         self.session.commit()
 
         return order.id
+    
+    def delete_all_orders(self) -> None:
+        self.session.query(OrderModel).delete()
+        self.session.commit()
+
+        return None

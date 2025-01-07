@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.product.product_repository_interface import \
     ProductRepositoryInterface

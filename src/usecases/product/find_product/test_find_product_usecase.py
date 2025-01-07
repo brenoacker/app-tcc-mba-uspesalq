@@ -1,13 +1,12 @@
 import random
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
 
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
 from usecases.product.find_product.find_product_dto import (
-    FindProductInputDto, FindProductOutputDto)
+    FindProductInputDto)
 from usecases.product.find_product.find_product_usecase import \
     FindProductUsecase
 

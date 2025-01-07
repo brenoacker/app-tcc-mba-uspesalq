@@ -1,4 +1,3 @@
-import logging
 import traceback
 from uuid import UUID
 
@@ -12,8 +11,7 @@ from infrastructure.cart_item.sqlalchemy.cart_item_repository import \
 from infrastructure.product.sqlalchemy.product_repository import \
     ProductRepository
 from infrastructure.user.sqlalchemy.user_repository import UserRepository
-from usecases.cart.add_cart.add_cart_dto import (AddCartInputDto,
-                                                 AddCartOutputDto)
+from usecases.cart.add_cart.add_cart_dto import (AddCartInputDto)
 from usecases.cart.add_cart.add_cart_usecase import AddCartUseCase
 from usecases.cart.find_cart.find_cart_dto import FindCartInputDto
 from usecases.cart.find_cart.find_cart_usecase import FindCartUseCase
@@ -27,19 +25,6 @@ from usecases.cart.remove_cart.remove_cart_dto import RemoveCartInputDto
 from usecases.cart.remove_cart.remove_cart_usecase import RemoveCartUseCase
 from usecases.cart.update_cart.update_cart_dto import UpdateCartInputDto
 from usecases.cart.update_cart.update_cart_usecase import UpdateCartUseCase
-from usecases.cart_item.add_item.add_item_dto import AddItemInputDto
-from usecases.cart_item.add_item.add_item_usecase import AddItemUseCase
-from usecases.cart_item.find_item.find_item_dto import FindItemInputDto
-from usecases.cart_item.find_item.find_item_usecase import FindItemUseCase
-from usecases.cart_item.list_items.list_items_usecase import ListItemsUseCase
-from usecases.cart_item.remove_item.remove_item_dto import RemoveItemInputDto
-from usecases.cart_item.remove_item.remove_item_usecase import \
-    RemoveItemUseCase
-from usecases.cart_item.update_item.update_item_dto import UpdateItemInputDto
-from usecases.cart_item.update_item.update_item_usecase import \
-    UpdateItemUseCase
-from usecases.user.find_user.find_user_dto import FindUserInputDto
-from usecases.user.find_user.find_user_usecase import FindUserUseCase
 
 router = APIRouter(prefix="/cart", tags=["Cart"])
 
@@ -141,3 +126,13 @@ def update_cart(cart_id: UUID, request: UpdateCartInputDto, user_id: UUID = Head
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
+    
+# @router.delete("/", status_code=204)
+# def delete_all_carts(session: Session = Depends(get_session)):
+#     try:
+#         cart_repository = CartRepository(session=session)
+#         usecase = DeleteAllCartsUseCase(cart_repository=cart_repository)
+#         usecase.execute()
+#         return {"message": "All carts deleted"}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e)) from e
