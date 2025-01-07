@@ -21,3 +21,7 @@ class OfferRepositoryInterface(ABC):
     @abstractmethod
     def remove_offer(self, offer_id: int) -> None:
         raise NotImplementedError
+    
+    @abstractmethod
+    def remove_all_offers(self) -> None:
+        raise NotImplementedError

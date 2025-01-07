@@ -60,9 +60,9 @@ class ExecutePaymentUseCase(UseCaseInterface):
         # Simulate payment gateway processing
         sleep(1)
 
-        # Simulate payment gateway processing for offers
-        if order.offer_id is not None:
-            sleep(random.randint(5,10)/10)
+        # # Simulate payment gateway processing for offers
+        # if order.offer_id is not None:
+        #     sleep(random.randint(5,10)/10)
 
         return ExecutePaymentOutputDto(
             id=executed_payment.id, 

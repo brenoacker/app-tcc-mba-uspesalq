@@ -95,3 +95,10 @@ class ProductRepository(ProductRepositoryInterface):
         self.session.commit()
         
         return None
+    
+    def delete_all_products(self) -> None:
+        
+        self.session.query(ProductModel).delete()
+        self.session.commit()
+        
+        return None

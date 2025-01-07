@@ -10,6 +10,8 @@ from usecases.offer.add_offer.add_offer_usecase import AddOfferUseCase
 from usecases.offer.find_offer.find_offer_dto import FindOfferInputDto
 from usecases.offer.find_offer.find_offer_usecase import FindOfferUseCase
 from usecases.offer.list_offers.list_offers_usecase import ListOffersUseCase
+from usecases.offer.remove_all_offers.remove_all_offers_usecase import \
+    RemoveAllOffersUsecase
 from usecases.offer.remove_offer.remove_offer_dto import RemoveOfferInputDto
 from usecases.offer.remove_offer.remove_offer_usecase import RemoveOfferUseCase
 
@@ -58,6 +60,19 @@ def remove_offer(offer_id: int, session: Session = Depends(get_session)):
         offer_repository = OfferRepository(session=session)
         usecase = RemoveOfferUseCase(offer_repository=offer_repository)
         usecase.execute(input=RemoveOfferInputDto(id=offer_id))
+        return None
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    except Exception as e:
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
+    
+@router.delete("/", status_code=204)
+def remove_all_offers(session: Session = Depends(get_session)):
+    try:
+        offer_repository = OfferRepository(session=session)
+        usecase = RemoveAllOffersUsecase(offer_repository=offer_repository)
+        usecase.execute()
         return None
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e

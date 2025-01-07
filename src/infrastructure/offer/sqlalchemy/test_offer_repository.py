@@ -100,3 +100,12 @@ def test_remove_offer(offer_repository, session):
 
     session.query().filter().delete.assert_called_once()
     session.commit.assert_called_once()
+
+def test_remove_all_offers_success(offer_repository, session):
+    # Act
+    result = offer_repository.remove_all_offers()
+
+    # Assert
+    session.query(OfferModel).delete.assert_called_once()
+    session.commit.assert_called_once()
+    assert result is None

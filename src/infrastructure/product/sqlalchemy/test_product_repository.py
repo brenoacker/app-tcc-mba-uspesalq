@@ -132,3 +132,12 @@ def test_delete_product(product_repository, session):
 
     session.query().filter().delete.assert_called_once()
     session.commit.assert_called_once()
+
+def test_delete_all_products_success(product_repository, session):
+    # Act
+    result = product_repository.delete_all_products()
+
+    # Assert
+    session.query(ProductModel).delete.assert_called_once()
+    session.commit.assert_called_once()
+    assert result is None

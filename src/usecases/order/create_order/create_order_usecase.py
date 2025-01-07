@@ -68,8 +68,8 @@ class CreateOrderUseCase(UseCaseInterface):
         if not created_payment:
             raise ValueError(f"Failed to create payment for order with id '{created_order.id}'")
 
-        if order.offer_id is not None:
-            sleep(random.randint(5,10)/10)
+        # if order.offer_id is not None:
+        #     sleep(random.randint(5,10)/10)
 
         return CreateOrderOutputDto(
             id=created_order.id, 

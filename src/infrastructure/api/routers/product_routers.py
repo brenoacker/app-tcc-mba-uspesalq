@@ -9,6 +9,8 @@ from infrastructure.product.sqlalchemy.product_repository import \
     ProductRepository
 from usecases.product.add_product.add_product_dto import AddProductInputDto
 from usecases.product.add_product.add_product_usecase import AddProductUseCase
+from usecases.product.delete_all_products.delete_all_products_usecase import \
+    DeleteAllProductsUseCase
 from usecases.product.delete_product.delete_product_dto import \
     DeleteProductInputDto
 from usecases.product.delete_product.delete_product_usecase import \
@@ -104,3 +106,12 @@ def delete_product(product_id: int, session: Session = Depends(get_session)):
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     
+@router.delete("/", status_code=204)
+def delete_all_products(session: Session = Depends(get_session)):
+    try:
+        product_repository = ProductRepository(session=session)
+        usecase = DeleteAllProductsUseCase(product_repository=product_repository)
+        output = usecase.execute()
+        return output
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
