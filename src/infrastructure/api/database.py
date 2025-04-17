@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+# Update this import to use the new location
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
 
@@ -9,6 +9,7 @@ engine = create_engine(settings.CONNECTION)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Use the imported declarative_base from sqlalchemy.orm
 Base = declarative_base()
 
 
