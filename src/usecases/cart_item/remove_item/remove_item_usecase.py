@@ -10,13 +10,13 @@ class RemoveItemUseCase(UseCaseInterface):
     def __init__(self, cart_item_repository: CartItemRepositoryInterface):
         self.cart_item_repository = cart_item_repository
 
-    def execute(self, input: RemoveItemInputDto) -> RemoveItemOutputDto:
+    async def execute(self, input: RemoveItemInputDto) -> RemoveItemOutputDto:
         
-        cart_item = self.cart_item_repository.find_item(item_id=input.id)
+        cart_item = await self.cart_item_repository.find_item(item_id=input.id)
 
         if not cart_item:
             raise ValueError(f"Cart Item with id '{input.id}' not found")
 
-        self.cart_item_repository.remove_item(item_id=cart_item.id)
+        await self.cart_item_repository.remove_item(item_id=cart_item.id)
 
         return cart_item

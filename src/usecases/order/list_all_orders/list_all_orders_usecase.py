@@ -8,8 +8,8 @@ class ListAllOrdersUseCase(UseCaseInterface):
     def __init__(self, order_repository: OrderRepositoryInterface):
         self.order_repository = order_repository
 
-    def execute(self) -> ListAllOrdersOutputDto:
-        orders = self.order_repository.list_all_orders()
+    async def execute(self) -> ListAllOrdersOutputDto:
+        orders = await self.order_repository.list_all_orders()
 
         if orders is None:
             return ListAllOrdersOutputDto(orders=[])

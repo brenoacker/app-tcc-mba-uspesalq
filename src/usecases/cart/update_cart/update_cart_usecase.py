@@ -24,15 +24,15 @@ class UpdateCartUseCase(UseCaseInterface):
         self.cart_item_repository = cart_item_repository
         self.product_repository = product_repository
 
-    def execute(self, user_id: UUID, cart_id: UUID, input: UpdateCartInputDto) -> UpdateCartOutputDto:
+    async def execute(self, user_id: UUID, cart_id: UUID, input: UpdateCartInputDto) -> UpdateCartOutputDto:
         
         # validando se o cart existe
-        cart_found = self.cart_repository.find_cart(cart_id=cart_id, user_id=user_id)
+        cart_found = await self.cart_repository.find_cart(cart_id=cart_id, user_id=user_id)
 
         if not cart_found:
             raise ValueError("Cart not found")
         
-        cart_items_found = self.cart_item_repository.find_items_by_cart_id(cart_id=cart_id)
+        cart_items_found = await self.cart_item_repository.find_items_by_cart_id(cart_id=cart_id)
 
         if not cart_items_found:
             raise ValueError("Cart items not found for this cart")
@@ -41,7 +41,7 @@ class UpdateCartUseCase(UseCaseInterface):
         # validando se os produtos enviados existem
         find_product_validation = FindProductValidation(product_repository=self.product_repository)
         for item in input.items:
-            product_exists = find_product_validation.validate_product_exists(product_id=item.product_id)
+            product_exists = await find_product_validation.validate_product_exists(product_id=item.product_id)
             if not product_exists:
                 raise ValueError(f"Product with code '{item.product_id}' not found")
 
@@ -51,23 +51,26 @@ class UpdateCartUseCase(UseCaseInterface):
 
             if cart_item:
                 if item.quantity == 0:
-                    self.cart_item_repository.remove_item(item_id=cart_item.id)
+                    await self.cart_item_repository.remove_item(item_id=cart_item.id)
                 else:
                     cart_item.quantity = item.quantity
-                    self.cart_item_repository.update_item(item=cart_item)
+                    await self.cart_item_repository.update_item(item=cart_item)
             else:
                 cart_item = CartItem(id=uuid.uuid4(), cart_id=cart_id, product_id=item.product_id, quantity=item.quantity)
-                self.cart_item_repository.add_item(cart_item=cart_item)
+                await self.cart_item_repository.add_item(cart_item=cart_item)
                 new_cart_items.append(cart_item)
 
-        cart_items_found_after_update = self.cart_item_repository.find_items_by_cart_id(cart_id=cart_id)
+        cart_items_found_after_update = await self.cart_item_repository.find_items_by_cart_id(cart_id=cart_id)
 
         if not cart_items_found_after_update:
-            self.cart_repository.remove_cart(cart_id=cart_id)
+            await self.cart_repository.remove_cart(cart_id=cart_id)
             return JSONResponse(content={"message": "All items were removed from cart. Cart was removed."}, status_code=200)
 
-        total_price = sum([cart_item.quantity * self.product_repository.find_product(product_id=cart_item.product_id).price for cart_item in cart_items_found_after_update])
+        total_price = 0
+        for cart_item in cart_items_found_after_update:
+            product = await self.product_repository.find_product(product_id=cart_item.product_id)
+            total_price += cart_item.quantity * product.price
 
-        updated_cart = self.cart_repository.update_cart(cart=Cart(id=cart_id, user_id=user_id, total_price=total_price))
+        updated_cart = await self.cart_repository.update_cart(cart=Cart(id=cart_id, user_id=user_id, total_price=total_price))
 
         return UpdateCartOutputDto(id=updated_cart.id, user_id=updated_cart.user_id, total_price=updated_cart.total_price)

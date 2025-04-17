@@ -9,9 +9,9 @@ class ListOrdersUseCase(UseCaseInterface):
     def __init__(self, order_repository: OrderRepositoryInterface):
         self.order_repository = order_repository
 
-    def execute(self, input: ListOrdersInputDto) -> ListOrdersOutputDto:
+    async def execute(self, input: ListOrdersInputDto) -> ListOrdersOutputDto:
 
-        orders = self.order_repository.list_orders(user_id=input.user_id)
+        orders = await self.order_repository.list_orders(user_id=input.user_id)
 
         if not orders:
             return ListOrdersOutputDto(orders=[])

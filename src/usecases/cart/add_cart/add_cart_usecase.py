@@ -22,10 +22,10 @@ class AddCartUseCase(UseCaseInterface):
         self.user_repository = user_repository
         self.product_repository = product_repository
 
-    def execute(self, user_id: uuid.UUID, input: AddCartInputDto) -> AddCartOutputDto:
+    async def execute(self, user_id: uuid.UUID, input: AddCartInputDto) -> AddCartOutputDto:
 
         # validating if user exists
-        user_found = self.user_repository.find_user(user_id=user_id)
+        user_found = await self.user_repository.find_user(user_id=user_id)
 
         if not user_found:
             raise ValueError(f"User with id '{user_id}' not found")
@@ -41,7 +41,7 @@ class AddCartUseCase(UseCaseInterface):
 
         # validating if all products exists
         for item in input.items:
-            product_found = self.product_repository.find_product(product_id=item.product_id)
+            product_found = await self.product_repository.find_product(product_id=item.product_id)
 
             if not product_found:
                 raise ValueError(f"Product with code '{item.product_id}' not found")
@@ -55,11 +55,11 @@ class AddCartUseCase(UseCaseInterface):
 
         cart = Cart(id=cart_id, user_id=user_id, total_price=total_price)
 
-        self.cart_repository.add_cart(cart=cart)
+        await self.cart_repository.add_cart(cart=cart)
 
         # adding items to cart
         for product in product_list:
-            self.cart_item_repository.add_item(cart_item=CartItem(id=uuid.uuid4(), cart_id=cart_id, product_id=product.product.id, quantity=product.quantity))
+            await self.cart_item_repository.add_item(cart_item=CartItem(id=uuid.uuid4(), cart_id=cart_id, product_id=product.product.id, quantity=product.quantity))
         
         return AddCartOutputDto(id=cart.id, user_id=cart.user_id, total_price=cart.total_price)
     

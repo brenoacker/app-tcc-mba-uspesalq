@@ -1,24 +1,28 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
 from .config import settings
 
+# Criação do AsyncEngine com o driver asyncpg
+engine = create_async_engine("postgresql+asyncpg://postgres:postgres@postgres/db", echo=True, future=True)
 
-engine = create_engine(settings.CONNECTION)
-
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Configuração do AsyncSession
+SessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    autocommit=False,
+    autoflush=False,
+)
 
 Base = declarative_base()
 
+# Função para obter uma sessão assíncrona
+async def get_session():
+    async with SessionLocal() as session:
+        yield session
 
-def get_session():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def create_tables():
-    Base.metadata.create_all(bind=engine)
+# Função para criar tabelas de forma assíncrona
+async def create_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

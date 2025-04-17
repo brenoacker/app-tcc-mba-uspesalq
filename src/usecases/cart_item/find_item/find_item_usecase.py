@@ -9,9 +9,9 @@ class FindItemUseCase(UseCaseInterface):
     def __init__(self, cart_item_repository: CartItemRepositoryInterface):
         self.cart_item_repository = cart_item_repository
 
-    def execute(self, input: FindItemInputDto) -> FindItemOutputDto:
+    async def execute(self, input: FindItemInputDto) -> FindItemOutputDto:
 
-        cart_item = self.cart_item_repository.find_item(item_id=input.id)
+        cart_item = await self.cart_item_repository.find_item(item_id=input.id)
 
         if not cart_item:
             raise ValueError(f"Cart item with id '{input.id}' not found")

@@ -1,7 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy.orm.session import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
@@ -13,22 +14,24 @@ from usecases.product.list_products.list_products_dto import ListProductsDto
 
 class ProductRepository(ProductRepositoryInterface):
 
-    def __init__(self, session: Session):
-        self.session: Session = session
+    def __init__(self, session: AsyncSession):
+        self.session: AsyncSession = session
 
-    def add_product(self, product: Product) -> ProductModel:
+    async def add_product(self, product: Product) -> ProductModel:
         
         product_model = ProductModel(id=product.id, name=product.name, price=product.price, category=product.category)
         
         self.session.add(product_model)
-        self.session.commit()
-        self.session.refresh(product_model)
+        await self.session.commit()
+        await self.session.refresh(product_model)
         
         return product_model
     
-    def find_product(self, product_id: int) -> Optional[Product]:
+    async def find_product(self, product_id: int) -> Optional[Product]:
         
-        product_in_db: ProductModel = self.session.query(ProductModel).get(product_id)
+        result = await self.session.execute(select(ProductModel).filter(ProductModel.id == product_id))
+        product_in_db = result.scalars().first()
+        
         if not product_in_db:
             return None
         
@@ -36,9 +39,11 @@ class ProductRepository(ProductRepositoryInterface):
         
         return product
     
-    def find_product_by_name(self, name: str) -> Optional[Product]:
+    async def find_product_by_name(self, name: str) -> Optional[Product]:
         
-        product_in_db: ProductModel = self.session.query(ProductModel).filter(ProductModel.name == name).first()
+        result = await self.session.execute(select(ProductModel).filter(ProductModel.name == name))
+        product_in_db = result.scalars().first()
+        
         if not product_in_db:
             return None
         
@@ -46,14 +51,12 @@ class ProductRepository(ProductRepositoryInterface):
         
         return product
     
-    def find_product_by_code(self, product_code: int) -> Optional[Product]:
+    async def find_product_by_code(self, product_code: int) -> Optional[Product]:
         '''Find a product by its code'''
-        # Create code that filters the product by product_code without the id
-
-        product_in_db: ProductModel = self.session.query(ProductModel).filter(ProductModel.product_code == product_code).first()
         
+        result = await self.session.execute(select(ProductModel).filter(ProductModel.product_code == product_code))
+        product_in_db = result.scalars().first()
         
-        # product_in_db: ProductModel = self.session.query(ProductModel).filter(ProductModel.product_code == product_code).first()
         if not product_in_db:
             return None
         
@@ -61,22 +64,24 @@ class ProductRepository(ProductRepositoryInterface):
         
         return product
     
-    def update_product(self, product: Product) -> None:
+    async def update_product(self, product: Product) -> None:
         
-        self.session.query(ProductModel).filter(ProductModel.id == product.id).update(
-            {
-                "name": product.name,
-                "price": product.price,
-                "category": product.category
-            }
-        )
-        self.session.commit()
+        stmt = select(ProductModel).filter(ProductModel.id == product.id)
+        result = await self.session.execute(stmt)
+        product_model = result.scalars().first()
+        
+        if product_model:
+            product_model.name = product.name
+            product_model.price = product.price
+            product_model.category = product.category
+            await self.session.commit()
         
         return None
     
-    def list_products(self) -> List[Product]:
+    async def list_products(self) -> List[Product]:
 
-        products_in_db = self.session.query(ProductModel).all()
+        result = await self.session.execute(select(ProductModel))
+        products_in_db = result.scalars().all()
 
         products = []
 
@@ -89,9 +94,26 @@ class ProductRepository(ProductRepositoryInterface):
 
         return products_dto
     
-    def delete_product(self, product_id: UUID) -> None:
+    async def delete_product(self, product_id: UUID) -> None:
         
-        self.session.query(ProductModel).filter(ProductModel.id == product_id).delete()
-        self.session.commit()
+        stmt = select(ProductModel).filter(ProductModel.id == product_id)
+        result = await self.session.execute(stmt)
+        product_model = result.scalars().first()
+        
+        if product_model:
+            await self.session.delete(product_model)
+            await self.session.commit()
+        
+        return None
+    
+    async def delete_all_products(self) -> None:
+        
+        result = await self.session.execute(select(ProductModel))
+        products = result.scalars().all()
+        
+        for product in products:
+            await self.session.delete(product)
+        
+        await self.session.commit()
         
         return None

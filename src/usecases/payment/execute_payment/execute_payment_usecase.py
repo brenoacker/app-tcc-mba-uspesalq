@@ -4,7 +4,11 @@ from datetime import datetime
 from time import sleep
 from uuid import UUID
 
+import requests
+
 from domain.__seedwork.use_case_interface import UseCaseInterface
+from domain.offer.offer_entity import Offer
+from domain.offer.offer_type_enum import OfferType
 from domain.order.order_repository_interface import OrderRepositoryInterface
 from domain.order.order_status_enum import OrderStatus
 from domain.payment.payment_entity import Payment
@@ -23,20 +27,43 @@ class ExecutePaymentUseCase(UseCaseInterface):
         self.user_repository = user_repository
         self.order_repository = order_repository
 
-    def execute(self, order_id: UUID, user_id: UUID, input: ExecutePaymentInputDto) -> ExecutePaymentOutputDto:
+    async def execute(self, order_id: UUID, user_id: UUID, input: ExecutePaymentInputDto) -> ExecutePaymentOutputDto:
 
-        user = self.user_repository.find_user(user_id)
+        user = await self.user_repository.find_user(user_id)
 
         if user is None:
             raise ValueError(f"User with id {user_id} not found")
         
-        order = self.order_repository.find_order(order_id=order_id, user_id=user_id)
+        order = await self.order_repository.find_order(order_id=order_id, user_id=user_id)
 
         if order is None:
             raise ValueError(f"Order with id {order_id} not found")
         
         if order.status == OrderStatus.CONFIRMED:
-            raise ValueError(f"Order with id {order_id} already confirmed")
+            raise ValueError(f"Order with id {order_id} already confirmed:\n order.id: {order.id}\n order.cart_id: {order.cart_id}\n order.status: {order.status}\n order.type: {order.type}\n order.total_price: {order.total_price}\n order.offer_id: {order.offer_id}")
+
+        payment_found = await self.payment_repository.find_payment_by_order_id(order_id=order_id)
+
+        if payment_found is None:
+            raise ValueError(f"Payment for order with id {order_id} not found")
+        
+        if payment_found.status == PaymentStatus.PAID:
+            raise ValueError(f"Payment for order with id {order_id} already paid")
+        
+        # if order.offer_id is not None:
+        #     offer_data = requests.get(f"http://localhost:8000/offer/{order.offer_id}").json()
+        #     offer = Offer(
+        #         id=int(offer_data['id']),  # Converte para inteiro
+        #         start_date=datetime.fromisoformat(offer_data['start_date']),  # Certifique-se de que o formato da data seja compatível
+        #         end_date=datetime.fromisoformat(offer_data['end_date']),
+        #         discount_type=OfferType(offer_data['discount_type']),  # Converte para OfferType
+        #         discount_value=float(offer_data['discount_value'])  # Converte para float
+        #     )            
+        #     if not offer.is_active():
+        #         raise ValueError(f"Offer with id '{input.offer_id}' is not active")
+
+        #     if not offer:
+        #         raise ValueError(f"Offer with id '{input.offer_id}' not found")
 
         payment = Payment(
             id=uuid.uuid4(),
@@ -47,10 +74,10 @@ class ExecutePaymentUseCase(UseCaseInterface):
             status=PaymentStatus.PAID,
         )
 
-        executed_payment = self.payment_repository.execute_payment(payment=payment)
+        executed_payment = await self.payment_repository.execute_payment(payment=payment)
 
         order.status = OrderStatus.CONFIRMED
-        updated_order = self.order_repository.update_order(order=order)
+        updated_order = await self.order_repository.update_order(order=order)
 
         if updated_order is None:
             raise ValueError(f"Failed to update order with id {order_id}")
@@ -60,10 +87,6 @@ class ExecutePaymentUseCase(UseCaseInterface):
 
         # Simulate payment gateway processing
         sleep(1)
-
-        # Simulate payment gateway processing for offers
-        if order.offer_id is not None:
-            sleep(random.randint(1,2)/10)
 
         return ExecutePaymentOutputDto(
             id=executed_payment.id, 

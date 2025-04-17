@@ -1,4 +1,3 @@
-
 import uuid
 from http.client import HTTPException
 
@@ -15,22 +14,22 @@ class AddProductUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, input: AddProductInputDto) -> AddProductOutputDto:
+    async def execute(self, input: AddProductInputDto) -> AddProductOutputDto:
         
-        find_product_by_name = self.product_repository.find_product_by_name(name=input.name)
+        find_product_by_name = await self.product_repository.find_product_by_name(name=input.name)
         
         if find_product_by_name:
-            raise ValueError(f"Product with '{input.name}' name already registered")
+            raise ValueError(f"Product with name '{input.name}' already registered")
 
-        find_product_by_id = self.product_repository.find_product(product_id=input.id)
+        find_product_by_id = await self.product_repository.find_product(product_id=input.id)
 
         if find_product_by_id:
-            raise ValueError(f"Product id '{input.id}' already registered")
+            raise ValueError(f"Product with id '{input.id}' already registered")
 
         category = ProductCategory(input.category)
 
         product = Product(id=input.id, name=input.name, price=input.price, category=category)
 
-        product_model = self.product_repository.add_product(product=product)
+        product_model = await self.product_repository.add_product(product=product)
 
-        return AddProductOutputDto(id=product_model.id, name=product_model.name, price=product_model.price, category=category)
+        return AddProductOutputDto(id=product_model.id, name=product_model.name, price=product_model.price, category=product_model.category)

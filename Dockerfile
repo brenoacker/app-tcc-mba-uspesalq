@@ -4,6 +4,8 @@ FROM python:3.9-alpine
 # Define o diretório de trabalho dentro do container
 WORKDIR /src
 
+ENV PYTHONPATH=/src
+RUN echo $PYTHONPATH
 # Copia todo o diretório 'app' da máquina host para dentro do container em /code/app
 COPY ./src /src
 
@@ -17,4 +19,4 @@ RUN pip3 install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Define o comando padrão a ser executado quando o container iniciar
-CMD ["uvicorn", "infra.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "infrastructure.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

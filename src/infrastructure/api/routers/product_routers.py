@@ -4,7 +4,7 @@ from uuid import UUID
 from venv import logger
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from infrastructure.api.database import get_session
 from infrastructure.product.sqlalchemy.product_repository import \
@@ -31,11 +31,11 @@ logger = logging.getLogger("uvicorn")
 router = APIRouter(prefix="/products", tags=["Products"])
 
 @router.post("/", status_code=201)
-def add_product(request: AddProductInputDto, session: Session = Depends(get_session)):
+async def add_product(request: AddProductInputDto, session: AsyncSession = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         usecase = AddProductUseCase(product_repository=product_repository)
-        output = usecase.execute(input=AddProductInputDto(id=request.id, name=request.name, price=request.price, category=request.category))
+        output = await usecase.execute(input=AddProductInputDto(id=request.id, name=request.name, price=request.price, category=request.category))
         return output
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
@@ -44,28 +44,22 @@ def add_product(request: AddProductInputDto, session: Session = Depends(get_sess
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e  
     
 @router.get("/", status_code=200)
-def list_products(session: Session = Depends(get_session)):
+async def list_products(session: AsyncSession = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         usecase = ListProductsUseCase(product_repository=product_repository)
-        output = usecase.execute()
-        
-        user_ids = [user.id for user in output.products]
-        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
-        with open("product_ids.txt", "w") as f:
-            for user_id in user_ids:
-                f.write(f"{user_id}\n")
+        output = await usecase.execute()
         return output
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e    
 
 @router.get("/{product_id}", status_code=200)
-def find_product(product_id: int, session: Session = Depends(get_session)):
+async def find_product(product_id: int, session: AsyncSession = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
         usecase = FindProductUsecase(product_repository=product_repository)
-        output = usecase.execute(input=FindProductInputDto(id=product_id))
+        output = await usecase.execute(input=FindProductInputDto(id=product_id))
         return output
 
     except ValueError as e:
@@ -74,10 +68,10 @@ def find_product(product_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=500, detail=str(e)) from e
     
 @router.patch("/{product_id}", status_code=200)
-def update_product(product_id: int, request: UpdateProductInputDto, session: Session = Depends(get_session)):
+async def update_product(product_id: int, request: UpdateProductInputDto, session: AsyncSession = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
-        product_found = product_repository.find_product(product_id=product_id)
+        product_found = await product_repository.find_product(product_id=product_id)
         if not product_found:
             raise HTTPException(status_code=404, detail=f"Product with id '{product_id}' not found")
         
@@ -86,7 +80,7 @@ def update_product(product_id: int, request: UpdateProductInputDto, session: Ses
             setattr(product_found, key, value)
 
         usecase = UpdateProductUseCase(product_repository=product_repository)
-        output = usecase.execute(
+        output = await usecase.execute(
             input=UpdateProductInputDto(
                 id=product_found.id,
                 name=product_found.name,
@@ -100,17 +94,26 @@ def update_product(product_id: int, request: UpdateProductInputDto, session: Ses
         raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e   
     
 @router.delete("/{product_id}", status_code=204)
-def delete_product(product_id: int, session: Session = Depends(get_session)):
+async def delete_product(product_id: int, session: AsyncSession = Depends(get_session)):
     try:
         product_repository = ProductRepository(session=session)
-        product_found = product_repository.find_product(product_id=product_id)
+        product_found = await product_repository.find_product(product_id=product_id)
         if not product_found:
             raise HTTPException(status_code=404, detail=f"Product with id '{product_id}' not found")
         
         usecase = DeleteProductUseCase(product_repository=product_repository)
-        output = usecase.execute(input=DeleteProductInputDto(id=product_id))
+        output = await usecase.execute(input=DeleteProductInputDto(id=product_id))
         
         return output
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     
+@router.delete("/", status_code=204)
+async def delete_all_products(session: AsyncSession = Depends(get_session)):
+    try:
+        product_repository = ProductRepository(session=session)
+        usecase = DeleteAllProductsUseCase(product_repository=product_repository)
+        output = await usecase.execute()
+        return output
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

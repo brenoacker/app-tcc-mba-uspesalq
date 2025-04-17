@@ -19,8 +19,13 @@ class Cart:
         self.validate()
 
     def set_total_price(self, total_price: float) -> float:
-        if not isinstance(total_price, float) or total_price < 0:
-            raise Exception("total_price must be a positive float")
+        # Convert Decimal, int or any numeric type to float
+        try:
+            total_price = float(total_price)
+        except (ValueError, TypeError):
+            raise Exception("total_price must be a numeric value that can be converted to float")
+        
+        # Converte para Decimal e define a precisão para duas casas decimais
         total_price_decimal = Decimal(total_price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
         return float(total_price_decimal)
 

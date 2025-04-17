@@ -9,9 +9,9 @@ class FindProductUsecase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, input: FindProductInputDto) -> FindProductOutputDto:
+    async def execute(self, input: FindProductInputDto) -> FindProductOutputDto:
         
-        product = self.product_repository.find_product(product_id=input.id)
+        product = await self.product_repository.find_product(product_id=input.id)
 
         if not product:
             raise ValueError(f"Product with id '{input.id}' not found")

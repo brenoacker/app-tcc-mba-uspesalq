@@ -1,6 +1,7 @@
 from typing import List
 
-from sqlalchemy.orm.session import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from domain.offer.offer_entity import Offer
 from domain.offer.offer_repository_interface import OfferRepositoryInterface
@@ -8,10 +9,10 @@ from infrastructure.offer.sqlalchemy.offer_model import OfferModel
 
 
 class OfferRepository(OfferRepositoryInterface):
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
-    def add_offer(self, offer: Offer) -> Offer:
+    async def add_offer(self, offer: Offer) -> Offer:
 
         offer_model = OfferModel(
             id=offer.id,
@@ -22,7 +23,8 @@ class OfferRepository(OfferRepositoryInterface):
         )
 
         self.session.add(offer_model)
-        self.session.commit()
+        await self.session.commit()
+        await self.session.refresh(offer_model)
 
         added_offer = Offer(
             id=offer_model.id,
@@ -34,8 +36,11 @@ class OfferRepository(OfferRepositoryInterface):
 
         return added_offer
 
-    def find_offer(self, offer_id: int) -> Offer:
-        offer_in_db = self.session.query(OfferModel).filter(OfferModel.id == offer_id).first()
+    async def find_offer(self, offer_id: int) -> Offer:
+        result = await self.session.execute(
+            select(OfferModel).filter(OfferModel.id == offer_id)
+        )
+        offer_in_db = result.scalars().first()
         
         if not offer_in_db:
             return None
@@ -50,8 +55,9 @@ class OfferRepository(OfferRepositoryInterface):
 
         return offer
 
-    def list_offers(self) -> List[Offer]:
-        offers_in_db = self.session.query(OfferModel).all()
+    async def list_offers(self) -> List[Offer]:
+        result = await self.session.execute(select(OfferModel))
+        offers_in_db = result.scalars().all()
 
         if not offers_in_db:
             return None
@@ -69,9 +75,18 @@ class OfferRepository(OfferRepositoryInterface):
 
         return offers
 
-    def remove_offer(self, offer_id: int) -> None:
+    async def remove_offer(self, offer_id: int) -> None:
+        stmt = select(OfferModel).filter(OfferModel.id == offer_id)
+        result = await self.session.execute(stmt)
+        offer = result.scalars().first()
+        
+        if offer:
+            await self.session.delete(offer)
+            await self.session.commit()
 
-        self.session.query(OfferModel).filter(OfferModel.id == offer_id).delete()
-        self.session.commit()
-
+        return None
+        
+    async def remove_all_offers(self) -> None:
+        await self.session.execute("DELETE FROM tb_offers")
+        await self.session.commit()
         return None

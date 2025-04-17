@@ -3,7 +3,7 @@ import traceback
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from infrastructure.api.database import get_session
 from infrastructure.cart.sqlalchemy.cart_repository import CartRepository
@@ -58,14 +58,14 @@ router = APIRouter(prefix="/cart", tags=["Cart"])
         },
     }
 )
-def create_cart(request: AddCartInputDto, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def create_cart(request: AddCartInputDto, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
         cart_item_repository = CartItemRepository(session=session)
         cart_repository = CartRepository(session=session)
         product_repository = ProductRepository(session=session)
         usecase = AddCartUseCase(cart_repository=cart_repository, cart_item_repository=cart_item_repository, user_repository=user_repository, product_repository=product_repository)
-        output = usecase.execute(user_id=user_id, input=AddCartInputDto(items=request.items))
+        output = await usecase.execute(user_id=user_id, input=AddCartInputDto(items=request.items))
         return output
     
     except ValueError as e:
@@ -74,11 +74,11 @@ def create_cart(request: AddCartInputDto, user_id: UUID = Header(...), session: 
         raise HTTPException(status_code=500, detail=str(e)) from e
     
 @router.get("/{cart_id}", status_code=200)
-def find_cart(cart_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def find_cart(cart_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         cart_repository = CartRepository(session=session)
         usecase = FindCartUseCase(cart_repository=cart_repository)
-        output = usecase.execute(input=FindCartInputDto(id=cart_id, user_id=user_id))
+        output = await usecase.execute(input=FindCartInputDto(id=cart_id, user_id=user_id))
         return output
 
     except ValueError as e:
@@ -88,12 +88,12 @@ def find_cart(cart_id: UUID, user_id: UUID = Header(...), session: Session = Dep
         raise HTTPException(status_code=500, detail=str(e)) from e
     
 @router.get("/{cart_id}/items", status_code=200)
-def list_items(cart_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def list_items(cart_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         cart_repository = CartRepository(session=session)
         cart_item_repository = CartItemRepository(session=session)
         usecase = FindCartItemsUseCase(cart_repository=cart_repository, cart_item_repository=cart_item_repository)
-        output = usecase.execute(input=FindCartItemsInputDto(cart_id=cart_id, user_id=user_id))
+        output = await usecase.execute(input=FindCartItemsInputDto(cart_id=cart_id, user_id=user_id))
         return output
     except ValueError as e:
         error_trace = traceback.format_exc()
@@ -103,22 +103,22 @@ def list_items(cart_id: UUID, user_id: UUID = Header(...), session: Session = De
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
     
 @router.get("/", status_code=200)
-def list_carts(user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def list_carts(user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         cart_repository = CartRepository(session=session)
         usecase = ListCartsUseCase(cart_repository=cart_repository)
-        output = usecase.execute(input=ListCartsInputDto(user_id=user_id))
+        output = await usecase.execute(input=ListCartsInputDto(user_id=user_id))
         return output
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     
 @router.delete("/{cart_id}", status_code=204)
-def remove_cart(cart_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def remove_cart(cart_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         cart_repository = CartRepository(session=session)
         usecase = RemoveCartUseCase(cart_repository=cart_repository)
-        usecase.execute(input=RemoveCartInputDto(id=cart_id, user_id=user_id))
+        await usecase.execute(input=RemoveCartInputDto(id=cart_id, user_id=user_id))
     except ValueError as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
@@ -126,13 +126,13 @@ def remove_cart(cart_id: UUID, user_id: UUID = Header(...), session: Session = D
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 @router.patch("/{cart_id}", status_code=200)
-def update_cart(cart_id: UUID, request: UpdateCartInputDto, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def update_cart(cart_id: UUID, request: UpdateCartInputDto, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         cart_repository = CartRepository(session=session)
         cart_item_repository = CartItemRepository(session=session)
         product_repository = ProductRepository(session=session)
         usecase = UpdateCartUseCase(cart_repository=cart_repository, cart_item_repository=cart_item_repository, product_repository=product_repository)
-        output = usecase.execute(user_id=user_id, cart_id=cart_id, input=UpdateCartInputDto(items=request.items))
+        output = await usecase.execute(user_id=user_id, cart_id=cart_id, input=UpdateCartInputDto(items=request.items))
         return output
 
     except ValueError as e:

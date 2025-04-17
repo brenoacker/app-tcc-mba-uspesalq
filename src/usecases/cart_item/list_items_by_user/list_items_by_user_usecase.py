@@ -9,8 +9,8 @@ class ListItemsByUserUseCase(UseCaseInterface):
     def __init__(self, cart_item_repository: CartItemRepositoryInterface):
         self.cart_item_repository = cart_item_repository
 
-    def execute(self, input: ListItemsByUserInputDto) -> ListItemsByUserOutputDto:
+    async def execute(self, input: ListItemsByUserInputDto) -> ListItemsByUserOutputDto:
         
-        items = self.cart_item_repository.list_items_by_user(user_id=input.user_id)
+        items = await self.cart_item_repository.list_items_by_user(user_id=input.user_id)
         
         return ListItemsByUserOutputDto(items=[ListItemsByUserDto(id=item.id, cart_id=item.cart_id, product_id=item.product_id, quantity=item.quantity) for item in items])
