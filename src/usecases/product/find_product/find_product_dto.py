@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel
 
 from domain.product.product_category_enum import ProductCategory

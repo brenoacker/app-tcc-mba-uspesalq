@@ -7,11 +7,10 @@ import pytest
 from domain.cart_item.cart_item_entity import CartItem
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
-from usecases.cart_item.add_item.add_item_dto import (AddItemInputDto,
-                                                      AddItemOutputDto)
+from usecases.cart_item.add_item.add_item_dto import (AddItemInputDto)
 from usecases.cart_item.add_item.add_item_usecase import AddItemUseCase
 from usecases.cart_item.update_item.update_item_dto import (
-    UpdateItemInputDto, UpdateItemOutputDto)
+    UpdateItemOutputDto)
 from usecases.cart_item.update_item.update_item_usecase import \
     UpdateItemUseCase
 

@@ -8,8 +8,6 @@ import pytest
 from domain.order.order_entity import Order
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
-from usecases.order.list_all_orders.list_all_orders_dto import (
-    ListAllOrderDto, ListAllOrdersOutputDto)
 from usecases.order.list_all_orders.list_all_orders_usecase import \
     ListAllOrdersUseCase
 
@@ -39,6 +37,14 @@ def test_list_all_orders_success(list_all_orders_usecase, order_repository):
 
 def test_list_all_orders_empty(list_all_orders_usecase, order_repository):
     order_repository.list_all_orders.return_value = []
+    
+    output_dto = list_all_orders_usecase.execute()
+    
+    assert len(output_dto.orders) == 0
+    order_repository.list_all_orders.assert_called_once()
+
+def test_list_all_orders_none(list_all_orders_usecase, order_repository):
+    order_repository.list_all_orders.return_value = None
     
     output_dto = list_all_orders_usecase.execute()
     

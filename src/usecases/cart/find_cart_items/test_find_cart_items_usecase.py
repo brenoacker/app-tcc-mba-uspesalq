@@ -49,7 +49,7 @@
     
 #     input_dto = FindCartItemsInputDto(cart_id=cart_id, user_id=user_id)
     
-#     with patch('src.infrastructure.api.config.settings', new=Mock(CONNECTION="mock_connection_string")):
+#     with patch('infrastructure.api.config.settings', new=Mock(CONNECTION="mock_connection_string")):
 #         with pytest.raises(ValueError) as excinfo:
 #             find_cart_items_usecase.execute(input=input_dto)
 #     assert str(excinfo.value) == f"Cart not found: {input_dto.cart_id}"

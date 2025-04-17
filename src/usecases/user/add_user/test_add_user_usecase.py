@@ -4,8 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from domain.user.user_entity import User
-from usecases.user.add_user.add_user_dto import (AddUserInputDto,
-                                                 AddUserOutputDto)
+from usecases.user.add_user.add_user_dto import (AddUserInputDto)
 from usecases.user.add_user.add_user_usecase import AddUserUseCase
 
 

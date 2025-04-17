@@ -1,7 +1,6 @@
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import and_
 from sqlalchemy.orm.session import Session
 
 from domain.cart_item.cart_item_entity import CartItem
@@ -9,7 +8,6 @@ from domain.cart_item.cart_item_repository_interface import \
     CartItemRepositoryInterface
 from infrastructure.cart_item.sqlalchemy.cart_item_model import CartItemModel
 from infrastructure.logging_config import logger
-from usecases.cart_item.list_items.list_items_dto import ListItemsOutputDto
 
 
 class CartItemRepository(CartItemRepositoryInterface):

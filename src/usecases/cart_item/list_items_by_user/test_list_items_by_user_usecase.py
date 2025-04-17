@@ -6,7 +6,7 @@ import pytest
 
 from domain.cart_item.cart_item_entity import CartItem
 from usecases.cart_item.list_items_by_user.list_items_by_user_dto import (
-    ListItemsByUserInputDto, ListItemsByUserOutputDto)
+    ListItemsByUserInputDto)
 from usecases.cart_item.list_items_by_user.list_items_by_user_usecase import \
     ListItemsByUserUseCase
 

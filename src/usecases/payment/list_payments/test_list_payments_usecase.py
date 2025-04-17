@@ -7,8 +7,8 @@ from domain.payment.payment_card_gateway_enum import PaymentCardGateway
 from domain.payment.payment_entity import Payment
 from domain.payment.payment_method_enum import PaymentMethod
 from domain.payment.payment_status_enum import PaymentStatus
-from usecases.payment.list_payments.list_payments_dto import (
-    ListPaymentsInputDto, ListPaymentsOutputDto)
+from usecases.payment.list_payments.list_payments_dto import \
+    ListPaymentsInputDto
 from usecases.payment.list_payments.list_payments_usecase import \
     ListPaymentsUseCase
 
@@ -50,6 +50,17 @@ def test_list_payments_success(list_payments_usecase, payment_repository):
 def test_list_payments_empty(list_payments_usecase, payment_repository):
     user_id = uuid4()
     payment_repository.list_payments.return_value = []
+    
+    input_dto = ListPaymentsInputDto(user_id=user_id)
+    
+    output_dto = list_payments_usecase.execute(input=input_dto)
+    
+    assert len(output_dto.payments) == 0
+    payment_repository.list_payments.assert_called_once_with(user_id=user_id)
+
+def test_list_payments_none(list_payments_usecase, payment_repository):
+    user_id = uuid4()
+    payment_repository.list_payments.return_value = None
     
     input_dto = ListPaymentsInputDto(user_id=user_id)
     

@@ -5,8 +5,7 @@ import pytest
 
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
-from usecases.user.find_user.find_user_dto import (FindUserInputDto,
-                                                   FindUserOutputDto)
+from usecases.user.find_user.find_user_dto import (FindUserInputDto)
 from usecases.user.find_user.find_user_usecase import FindUserUseCase
 
 

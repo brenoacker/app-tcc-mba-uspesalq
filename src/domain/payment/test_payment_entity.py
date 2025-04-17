@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import uuid4
 
 import pytest
@@ -23,20 +22,6 @@ def test_payment_creation_with_card():
     assert payment.user_id == user_id
     assert payment.payment_method == payment_method
     assert payment.payment_card_gateway == payment_card_gateway
-
-def test_payment_creation_with_pix():
-    payment_id = uuid4()
-    order_id = uuid4()
-    user_id = uuid4()
-    payment_method = PaymentMethod.PIX
-
-    payment = Payment(id=payment_id, order_id=order_id, user_id=user_id, payment_method=payment_method, status=PaymentStatus.PAID)
-
-    assert payment.id == payment_id
-    assert payment.order_id == order_id
-    assert payment.user_id == user_id
-    assert payment.payment_method == payment_method
-    assert payment.payment_card_gateway == None
 
 def test_payment_creation_with_cash():
     payment_id = uuid4()

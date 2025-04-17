@@ -5,8 +5,7 @@ import pytest
 
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
-from usecases.user.update_user.update_user_dto import (UpdateUserInputDto,
-                                                       UpdateUserOutputDto)
+from usecases.user.update_user.update_user_dto import (UpdateUserInputDto)
 from usecases.user.update_user.update_user_usecase import UpdateUserUseCase
 
 

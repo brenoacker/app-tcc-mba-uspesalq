@@ -1,7 +1,5 @@
 import logging
 import traceback
-from uuid import UUID
-from venv import logger
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -11,6 +9,8 @@ from infrastructure.product.sqlalchemy.product_repository import \
     ProductRepository
 from usecases.product.add_product.add_product_dto import AddProductInputDto
 from usecases.product.add_product.add_product_usecase import AddProductUseCase
+from usecases.product.delete_all_products.delete_all_products_usecase import \
+    DeleteAllProductsUseCase
 from usecases.product.delete_product.delete_product_dto import \
     DeleteProductInputDto
 from usecases.product.delete_product.delete_product_usecase import \
@@ -18,8 +18,6 @@ from usecases.product.delete_product.delete_product_usecase import \
 from usecases.product.find_product.find_product_dto import FindProductInputDto
 from usecases.product.find_product.find_product_usecase import \
     FindProductUsecase
-from usecases.product.list_products.list_products_dto import \
-    ListProductsInputDto
 from usecases.product.list_products.list_products_usecase import \
     ListProductsUseCase
 from usecases.product.update_product.update_product_dto import \
@@ -49,12 +47,6 @@ def list_products(session: Session = Depends(get_session)):
         product_repository = ProductRepository(session=session)
         usecase = ListProductsUseCase(product_repository=product_repository)
         output = usecase.execute()
-        
-        user_ids = [user.id for user in output.products]
-        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
-        with open("product_ids.txt", "w") as f:
-            for user_id in user_ids:
-                f.write(f"{user_id}\n")
         return output
     except Exception as e:
         error_trace = traceback.format_exc()
@@ -114,3 +106,12 @@ def delete_product(product_id: int, session: Session = Depends(get_session)):
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     
+@router.delete("/", status_code=204)
+def delete_all_products(session: Session = Depends(get_session)):
+    try:
+        product_repository = ProductRepository(session=session)
+        usecase = DeleteAllProductsUseCase(product_repository=product_repository)
+        output = usecase.execute()
+        return output
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

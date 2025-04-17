@@ -4,8 +4,6 @@ from unittest.mock import Mock
 
 import pytest
 
-from domain.cart.cart_entity import Cart
-from domain.cart_item.cart_item_entity import CartItem
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
 from domain.user.user_entity import User
