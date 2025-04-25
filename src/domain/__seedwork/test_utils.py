@@ -4,6 +4,9 @@ import inspect
 from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 from unittest.mock import AsyncMock, MagicMock, patch
 
+# Removi a importação circular:
+# from domain.__seedwork.test_utils import run_async, async_return, async_side_effect
+
 T = TypeVar('T')
 
 def run_async(coro):
@@ -25,6 +28,10 @@ def run_async(coro):
     """
     try:
         loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # Create a new event loop if the current one is running
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
     except RuntimeError:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -32,7 +39,8 @@ def run_async(coro):
     try:
         return loop.run_until_complete(coro)
     finally:
-        if not loop.is_running():
+        # Only close if we created a new loop
+        if loop != asyncio.get_event_loop():
             loop.close()
 
 def async_return(value: Any) -> AsyncMock:
@@ -74,4 +82,4 @@ async def test_method(self, mock_method):
         ...
     ```
     """
-    return patch(target, new_callable=AsyncMock, **kwargs) 
+    return patch(target, new_callable=AsyncMock, **kwargs)

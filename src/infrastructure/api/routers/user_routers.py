@@ -10,7 +10,6 @@ from usecases.user.add_user.add_user_dto import AddUserInputDto
 from usecases.user.add_user.add_user_usecase import AddUserUseCase
 from usecases.user.find_user.find_user_dto import FindUserInputDto
 from usecases.user.find_user.find_user_usecase import FindUserUseCase
-from usecases.user.list_users.list_users_dto import ListUsersInputDto
 from usecases.user.list_users.list_users_usecase import ListUsersUseCase
 from usecases.user.update_user.update_user_dto import UpdateUserInputDto
 from usecases.user.update_user.update_user_usecase import UpdateUserUseCase

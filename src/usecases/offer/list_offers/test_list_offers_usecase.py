@@ -5,11 +5,10 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.offer.offer_entity import Offer
 from domain.offer.offer_type_enum import OfferType
-from usecases.offer.list_offers.list_offers_dto import (ListOffersOutputDto,
-                                                        OfferDto)
 from usecases.offer.list_offers.list_offers_usecase import ListOffersUseCase
 
 
@@ -27,19 +26,22 @@ async def test_list_offers_success(list_offers_usecase, offer_repository):
     offer = Offer(id=offer_id, start_date=datetime.now(), end_date=datetime.now() + timedelta(days=10), discount_type=OfferType.PERCENTAGE, discount_value=20.0)
     offer_repository.list_offers = async_return([offer])
     
+    # Substituindo run_async por await
     output_dto = await list_offers_usecase.execute()
     
     assert len(output_dto.offers) == 1
     assert output_dto.offers[0].id == offer_id
     assert output_dto.offers[0].discount_type == OfferType.PERCENTAGE
     assert output_dto.offers[0].discount_value == 20.0
-    offer_repository.list_offers.await_count == 1
+    offer_repository.list_offers.assert_awaited_once_with()
 
 @pytest.mark.asyncio
 async def test_list_offers_empty(list_offers_usecase, offer_repository):
     offer_repository.list_offers = async_return([])
     
+    # Substituindo run_async por await
     output_dto = await list_offers_usecase.execute()
     
     assert len(output_dto.offers) == 0
-    offer_repository.list_offers.await_count == 1
+    # Corrigindo a verificação da chamada do método
+    assert offer_repository.list_offers.await_count == 1

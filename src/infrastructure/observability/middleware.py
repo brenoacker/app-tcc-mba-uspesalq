@@ -6,9 +6,9 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from infrastructure.observability.metrics import (increment_error,
-                                                  increment_internal_request,
-                                                  record_internal_request_duration)
+from infrastructure.observability.metrics import (
+    increment_error, increment_internal_request,
+    record_internal_request_duration)
 from infrastructure.observability.telemetry import create_span
 
 
@@ -39,8 +39,8 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         method = request.method
         route = request.url.path
         
-        # Registra o início da requisição
-        start_time = time.time()
+        # Registra o início da requisição usando perf_counter para maior precisão e eficiência
+        start_time = time.perf_counter()
         
         # Cria um span para a requisição
         attributes = {
@@ -62,7 +62,7 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             
             # Registra o fim da requisição
-            duration = time.time() - start_time
+            duration = time.perf_counter() - start_time
             duration_ms = duration * 1000
             
             # Atualiza métricas
@@ -72,4 +72,4 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         except Exception as e:
             # Registra erros
             increment_error(error_type=type(e).__name__, endpoint=route)
-            raise e 
+            raise e

@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 
 from domain.user.user_entity import User
 from domain.user.user_repository_interface import UserRepositoryInterface
-from infrastructure.logging_config import logger
+from infrastructure.api.cache import async_cached
 from infrastructure.user.sqlalchemy.user_model import UserModel
 
 
@@ -25,6 +25,7 @@ class UserRepository(UserRepositoryInterface):
 
         return User(id=user_model.id, name=user_model.name, email=user_model.email, age=user_model.age, gender=user_model.gender, phone_number=user_model.phone_number, password=user_model.password)
 
+    @async_cached(ttl=600, prefix='user')
     async def find_user(self, user_id: UUID) -> User:
 
         result = await self.session.execute(select(UserModel).filter(UserModel.id == user_id))

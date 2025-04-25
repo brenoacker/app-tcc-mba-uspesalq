@@ -1,4 +1,4 @@
-from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, String,
+from sqlalchemy import (Column, ForeignKey, String,
                         TypeDecorator)
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -53,6 +53,6 @@ class PaymentModel(Base):
     id = Column(UUID, primary_key=True)
     user_id = Column(UUID, ForeignKey('tb_users.id'), nullable=False)
     order_id = Column(UUID, ForeignKey('tb_orders.id'), nullable=False)
-    payment_method = Column(PaymentMethodType, nullable=False)
-    payment_card_gateway = Column(PaymentCardGatewayType, nullable=False)
+    payment_method = Column(PaymentMethodType, nullable=True)
+    payment_card_gateway = Column(PaymentCardGatewayType, nullable=True)
     status = Column(PaymentStatusType, nullable=False)

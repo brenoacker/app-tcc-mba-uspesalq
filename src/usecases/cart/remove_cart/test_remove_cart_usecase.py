@@ -6,8 +6,7 @@ import pytest
 from domain.__seedwork.test_utils import (async_return, async_side_effect,
                                           run_async)
 from domain.cart.cart_entity import Cart
-from usecases.cart.remove_cart.remove_cart_dto import (RemoveCartInputDto,
-                                                       RemoveCartOutputDto)
+from usecases.cart.remove_cart.remove_cart_dto import RemoveCartInputDto
 from usecases.cart.remove_cart.remove_cart_usecase import RemoveCartUseCase
 
 
@@ -30,6 +29,7 @@ async def test_remove_cart_success(remove_cart_usecase, cart_repository):
     
     input_dto = RemoveCartInputDto(id=cart_id, user_id=user_id)
     
+    # Substituindo run_async por await
     output_dto = await remove_cart_usecase.execute(input=input_dto)
     
     assert output_dto.id == cart_id
@@ -46,6 +46,7 @@ async def test_remove_cart_not_found(remove_cart_usecase, cart_repository):
     input_dto = RemoveCartInputDto(id=cart_id, user_id=user_id)
     
     with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
         await remove_cart_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"Cart with id '{cart_id}' not found"
     cart_repository.find_cart.assert_awaited_once_with(cart_id=cart_id, user_id=user_id)

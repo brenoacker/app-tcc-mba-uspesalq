@@ -51,5 +51,8 @@ class UpdateOrderUseCase(UseCaseInterface):
 
         updated_order = await self.order_repository.update_order(order=order)
         
+        # Adicionando verificação para evitar AttributeError quando updated_order é None
+        if updated_order is None:
+            raise ValueError(f"Order with id '{input.id}' not updated")
+        
         return UpdateOrderOutputDto(id=updated_order.id, user_id=updated_order.user_id, cart_id=updated_order.cart_id, total_price=updated_order.total_price, type=updated_order.type, status=updated_order.status, created_at=updated_order.created_at, updated_at=updated_order.updated_at, offer_id=updated_order.offer_id)
-    

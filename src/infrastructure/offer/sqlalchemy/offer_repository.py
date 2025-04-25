@@ -5,6 +5,7 @@ from sqlalchemy.future import select
 
 from domain.offer.offer_entity import Offer
 from domain.offer.offer_repository_interface import OfferRepositoryInterface
+from infrastructure.api.cache import async_cached
 from infrastructure.offer.sqlalchemy.offer_model import OfferModel
 
 
@@ -36,6 +37,7 @@ class OfferRepository(OfferRepositoryInterface):
 
         return added_offer
 
+    @async_cached(ttl=600, prefix='offer')
     async def find_offer(self, offer_id: int) -> Offer:
         result = await self.session.execute(
             select(OfferModel).filter(OfferModel.id == offer_id)
@@ -55,6 +57,7 @@ class OfferRepository(OfferRepositoryInterface):
 
         return offer
 
+    @async_cached(ttl=600, prefix='offer')
     async def list_offers(self) -> List[Offer]:
         result = await self.session.execute(select(OfferModel))
         offers_in_db = result.scalars().all()

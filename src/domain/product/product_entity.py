@@ -10,7 +10,7 @@ class Product:
     price: float
     category: ProductCategory
 
-    def __init__(self, id: UUID, name: str, price: float, category: ProductCategory):
+    def __init__(self, id: int, name: str, price: float, category: ProductCategory):
         self.id = id
         self.name = name
         self.price = price

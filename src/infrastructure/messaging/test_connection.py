@@ -1,11 +1,10 @@
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pika
 import pytest
 
-from infrastructure.messaging.connection import get_rabbit_connection
-
 from domain.__seedwork.test_utils import run_async
+from infrastructure.messaging.connection import get_rabbit_connection
 
 
 @patch('src.infrastructure.messaging.connection.pika.BlockingConnection')
@@ -28,7 +27,17 @@ async def test_get_rabbit_connection(mock_plain_credentials, mock_connection_par
 
     # Assertions
     mock_plain_credentials.assert_called_once_with("rabbitmq", "rabbitmq")
-    mock_connection_parameters.assert_called_once_with(host="rabbitmq", port=5672, credentials=mock_credentials)
+    # Usando ANY para parâmetros adicionais que não queremos verificar especificamente
+    mock_connection_parameters.assert_called_once_with(
+        host="rabbitmq", 
+        port=5672, 
+        credentials=mock_credentials,
+        heartbeat=60,
+        blocked_connection_timeout=10,
+        socket_timeout=10,
+        retry_delay=1,
+        connection_attempts=3
+    )
     mock_blocking_connection.assert_called_once_with(mock_parameters)
     assert connection == mock_connection
 

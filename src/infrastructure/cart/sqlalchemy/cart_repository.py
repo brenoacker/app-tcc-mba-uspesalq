@@ -36,15 +36,18 @@ class CartRepository(CartRepositoryInterface):
         return None
 
     async def update_cart(self, cart: Cart) -> Cart:
+        # In SQLAlchemy 2.0, we need to use update() differently for async
+        from sqlalchemy import update
+
+        # Execute the update statement directly
         await self.session.execute(
-            select(CartModel).filter(CartModel.id == cart.id).update(
-                {
-                    "total_price": cart.total_price
-                }
-            )
+            update(CartModel)
+            .where(CartModel.id == cart.id)
+            .values(total_price=cart.total_price)
         )
         await self.session.commit()
 
+        # Fetch the updated cart
         result = await self.session.execute(
             select(CartModel).filter(CartModel.id == cart.id)
         )
@@ -59,8 +62,12 @@ class CartRepository(CartRepositoryInterface):
         return updated_cart
 
     async def remove_cart(self, cart_id: UUID):
+        # In SQLAlchemy 2.0, we need to use delete() differently for async
+        from sqlalchemy import delete
+
+        # Execute the delete statement directly
         await self.session.execute(
-            select(CartModel).filter(CartModel.id == cart_id).delete()
+            delete(CartModel).where(CartModel.id == cart_id)
         )
         await self.session.commit()
 
@@ -78,7 +85,13 @@ class CartRepository(CartRepositoryInterface):
         return [Cart(id=cart.id, user_id=cart.user_id, total_price=cart.total_price) for cart in carts]
 
     async def delete_all_carts(self):
-        await self.session.execute(select(CartModel).delete())
+        # In SQLAlchemy 2.0, we need to use delete() differently for async
+        from sqlalchemy import delete
+
+        # Execute the delete statement directly
+        await self.session.execute(
+            delete(CartModel)
+        )
         await self.session.commit()
 
         return None

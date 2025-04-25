@@ -4,10 +4,9 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.cart_item.cart_item_entity import CartItem
-from usecases.cart_item.list_items.list_items_dto import (ListItemsDto,
-                                                          ListItemsOutputDto)
 from usecases.cart_item.list_items.list_items_usecase import ListItemsUseCase
 
 
@@ -29,6 +28,7 @@ async def test_list_items_success(list_items_usecase, cart_item_repository):
     ]
     cart_item_repository.list_items = async_return(cart_items)
     
+    # Substituindo run_async por await
     output_dto = await list_items_usecase.execute()
     
     assert len(output_dto.items) == 2
@@ -40,6 +40,7 @@ async def test_list_items_success(list_items_usecase, cart_item_repository):
 async def test_list_items_empty(list_items_usecase, cart_item_repository):
     cart_item_repository.list_items = async_return([])
     
+    # Substituindo run_async por await
     output_dto = await list_items_usecase.execute()
     
     assert len(output_dto.items) == 0

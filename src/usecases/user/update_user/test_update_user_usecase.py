@@ -3,11 +3,11 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
-from usecases.user.update_user.update_user_dto import (UpdateUserInputDto,
-                                                       UpdateUserOutputDto)
+from usecases.user.update_user.update_user_dto import UpdateUserInputDto
 from usecases.user.update_user.update_user_usecase import UpdateUserUseCase
 
 
@@ -28,7 +28,11 @@ async def test_update_user_success(update_user_usecase, user_repository):
     user_gender = UserGender.MALE
     user_phone_number = "0987654321"
     user_password = "newpassword"
+    
     user = User(id=user_id, name=user_name, email=user_email, age=user_age, gender=user_gender, phone_number=user_phone_number, password=user_password)
+    
+    # Configure o mock para find_user também
+    user_repository.find_user = async_return(user)
     user_repository.update_user = async_return(user)
     
     input_dto = UpdateUserInputDto(name=user_name, email=user_email, age=user_age, gender=user_gender, phone_number=user_phone_number, password=user_password)
@@ -52,5 +56,6 @@ async def test_update_user_not_found(update_user_usecase, user_repository):
     input_dto = UpdateUserInputDto(name="Updated User", email="updated@example.com", age=35, gender=UserGender.MALE, phone_number="0987654321", password="newpassword")
     
     with pytest.raises(ValueError) as excinfo:
-        run_async(update_user_usecase.execute(id=user_id, input=input_dto))
+        # Substituindo run_async por await diretamente
+        await update_user_usecase.execute(id=user_id, input=input_dto)
     assert str(excinfo.value) == f"User with id '{user_id}' not found"

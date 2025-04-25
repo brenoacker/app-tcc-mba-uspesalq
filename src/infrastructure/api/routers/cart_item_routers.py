@@ -1,4 +1,3 @@
-import logging
 import traceback
 from uuid import UUID
 
@@ -8,11 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.api.database import get_session
 from infrastructure.cart_item.sqlalchemy.cart_item_repository import \
     CartItemRepository
-from infrastructure.product.sqlalchemy.product_repository import \
-    ProductRepository
-from infrastructure.user.sqlalchemy.user_repository import UserRepository
-from usecases.cart_item.add_item.add_item_dto import AddItemInputDto
-from usecases.cart_item.add_item.add_item_usecase import AddItemUseCase
 from usecases.cart_item.find_item.find_item_dto import FindItemInputDto
 from usecases.cart_item.find_item.find_item_usecase import FindItemUseCase
 from usecases.cart_item.list_items.list_items_usecase import ListItemsUseCase

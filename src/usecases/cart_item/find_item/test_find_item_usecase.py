@@ -4,10 +4,10 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.cart_item.cart_item_entity import CartItem
-from usecases.cart_item.find_item.find_item_dto import (FindItemInputDto,
-                                                        FindItemOutputDto)
+from usecases.cart_item.find_item.find_item_dto import FindItemInputDto
 from usecases.cart_item.find_item.find_item_usecase import FindItemUseCase
 
 
@@ -29,13 +29,14 @@ async def test_find_item_success(find_item_usecase, cart_item_repository):
     
     input_dto = FindItemInputDto(id=item_id)
     
+    # Substituindo run_async por await
     output_dto = await find_item_usecase.execute(input=input_dto)
     
     assert output_dto.id == item_id
     assert output_dto.cart_id == cart_id
     assert output_dto.product_id == product_id
     assert output_dto.quantity == 2
-    cart_item_repository.find_item.assert_awaited_once_with()
+    cart_item_repository.find_item.assert_awaited_once()
 
 @pytest.mark.asyncio
 async def test_find_item_not_found(find_item_usecase, cart_item_repository):
@@ -45,6 +46,7 @@ async def test_find_item_not_found(find_item_usecase, cart_item_repository):
     input_dto = FindItemInputDto(id=item_id)
     
     with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
         await find_item_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"Cart item with id '{item_id}' not found"
-    cart_item_repository.find_item.assert_awaited_once_with()
+    cart_item_repository.find_item.assert_awaited_once()

@@ -6,6 +6,16 @@ WORKDIR /src
 
 ENV PYTHONPATH=/src
 RUN echo $PYTHONPATH
+
+# Instala as dependências de compilação necessárias para pacotes como aiohttp
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo
+
 # Copia todo o diretório 'app' da máquina host para dentro do container em /code/app
 COPY ./src /src
 

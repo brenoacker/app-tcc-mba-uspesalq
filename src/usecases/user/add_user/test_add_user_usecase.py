@@ -24,7 +24,6 @@ def add_user_usecase(user_repository):
 
 @pytest.mark.asyncio
 async def test_add_user_success(add_user_usecase, user_repository):
-
     input_dto = AddUserInputDto(
         name="John Doe",
         email="john.doe@example.com",
@@ -33,14 +32,18 @@ async def test_add_user_success(add_user_usecase, user_repository):
         phone_number="1234567890",
         password="securepassword"
     )
+    
     user_id = uuid.uuid4()
     user_repository.add_user = async_return(User(id=user_id, name=input_dto.name, email=input_dto.email, age=input_dto.age, gender=UserGender.MALE, phone_number=input_dto.phone_number, password=input_dto.password))
-
+    
+    # Substituindo run_async por await
     output_dto = await add_user_usecase.execute(input=input_dto)
-
-    assert output_dto.name == input_dto.name
-    assert output_dto.email == input_dto.email
-    assert output_dto.age == input_dto.age
-    assert output_dto.gender == input_dto.gender
-    assert output_dto.phone_number == input_dto.phone_number
+    
+    assert output_dto.id is not None
+    assert output_dto.name == "John Doe"
+    assert output_dto.email == "john.doe@example.com"
+    assert output_dto.age == 25
+    assert output_dto.gender == UserGender.MALE  # Corrigido para comparar com o enum em vez da string
+    assert output_dto.phone_number == "1234567890"
+    assert output_dto.password == "securepassword"
     assert user_repository.add_user.await_count == 1

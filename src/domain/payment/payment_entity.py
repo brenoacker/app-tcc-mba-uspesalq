@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import UUID
 
 from domain.payment.payment_card_gateway_enum import PaymentCardGateway
@@ -15,7 +14,7 @@ class Payment:
     payment_card_gateway: PaymentCardGateway
     status: PaymentStatus
 
-    def __init__(self, id: UUID, order_id: UUID, user_id: UUID, payment_method: PaymentMethod, status: PaymentStatus, payment_card_gateway: PaymentCardGateway = None):
+    def __init__(self, id: UUID, order_id: UUID, user_id: UUID, status: PaymentStatus, payment_method: PaymentMethod = None, payment_card_gateway: PaymentCardGateway = None):
         self.id = id
         self.order_id = order_id
         self.user_id = user_id
@@ -34,8 +33,10 @@ class Payment:
         if not isinstance(self.user_id, UUID):
             raise Exception("user_id must be an UUID")
         
-        if not isinstance(self.payment_method, PaymentMethod):
-            raise Exception("payment_method must be an instance of PaymentMethod")
+        if self.payment_method is not None:
+            if not isinstance(self.payment_method, PaymentMethod):
+                raise Exception("payment_method must be an instance of PaymentMethod")
+
         
         if self.payment_method == PaymentMethod.CARD and not isinstance(self.payment_card_gateway, PaymentCardGateway):
                 raise Exception("payment_card_gateway must be an instance of PaymentCardGateway")

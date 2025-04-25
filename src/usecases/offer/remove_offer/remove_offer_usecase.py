@@ -10,10 +10,10 @@ class RemoveOfferUseCase(UseCaseInterface):
 
     async def execute(self, input: RemoveOfferInputDto) -> None:
 
-        offer = await self.offer_repository.find_offer(input.id)
+        offer = await self.offer_repository.find_offer(offer_id=input.id)
         if offer is None:
             raise ValueError(f"Offer with id {input.id} not found")
 
-        await self.offer_repository.remove_offer(offer.id)
+        await self.offer_repository.remove_offer(offer_id=offer.id)
 
         return None

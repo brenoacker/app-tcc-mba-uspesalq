@@ -3,7 +3,8 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.cart.cart_entity import Cart
 from usecases.cart.list_carts.list_carts_dto import (ListCartsInputDto,
                                                      ListCartsOutputDto)
@@ -30,6 +31,7 @@ async def test_list_carts_success(list_carts_usecase, cart_repository):
     
     input_dto = ListCartsInputDto(user_id=user_id)
     
+    # Substituindo run_async por await
     output_dto = await list_carts_usecase.execute(input=input_dto)
     
     assert len(output_dto.carts) == 2
@@ -46,6 +48,7 @@ async def test_list_carts_empty(list_carts_usecase, cart_repository):
     input_dto = ListCartsInputDto(user_id=user_id)
     
     with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
         await list_carts_usecase.execute(input=input_dto)
     assert str(excinfo.value) == "No carts found"
-    cart_repository.list_carts.assert_called_once_with(user_id=user_id)
+    cart_repository.list_carts.assert_awaited_once_with(user_id=user_id)

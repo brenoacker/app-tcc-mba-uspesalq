@@ -5,7 +5,8 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.order.order_entity import Order
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
@@ -16,7 +17,9 @@ from usecases.order.find_order.find_order_usecase import FindOrderUseCase
 
 @pytest.fixture
 def order_repository():
-    return Mock()
+    repo = Mock()
+    repo.find_order = AsyncMock()
+    return repo
 
 @pytest.fixture
 def find_order_usecase(order_repository):
@@ -46,7 +49,7 @@ async def test_find_order_success(find_order_usecase, order_repository):
 
     assert output_dto.id == order_id
     assert output_dto.user_id == user_id
-    order_repository.find_order.assert_awaited_once_with()
+    order_repository.find_order.await_count == 1
 
 @pytest.mark.asyncio
 async def test_find_order_not_found(find_order_usecase, order_repository):
@@ -59,4 +62,4 @@ async def test_find_order_not_found(find_order_usecase, order_repository):
     with pytest.raises(ValueError) as excinfo:
         await find_order_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"Order with id '{order_id}' not found"
-    order_repository.find_order.assert_awaited_once_with()
+    order_repository.find_order.await_count == 1

@@ -1,4 +1,5 @@
 import json
+
 import pika
 
 from infrastructure.messaging.connection import get_rabbit_connection

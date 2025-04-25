@@ -3,20 +3,21 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.payment.payment_card_gateway_enum import PaymentCardGateway
 from domain.payment.payment_entity import Payment
 from domain.payment.payment_method_enum import PaymentMethod
 from domain.payment.payment_status_enum import PaymentStatus
-from usecases.payment.list_all_payments.list_all_payments_dto import (
-    ListAllPaymentsDto, ListAllPaymentsOutputDto)
 from usecases.payment.list_all_payments.list_all_payments_usecase import \
     ListAllPaymentsUseCase
 
 
 @pytest.fixture
 def payment_repository():
-    return Mock()
+    repo = Mock()
+    repo.list_all_payments = AsyncMock()
+    return repo
 
 @pytest.fixture
 def list_all_payments_usecase(payment_repository):
@@ -41,6 +42,15 @@ async def test_list_all_payments_success(list_all_payments_usecase, payment_repo
 @pytest.mark.asyncio
 async def test_list_all_payments_empty(list_all_payments_usecase, payment_repository):
     payment_repository.list_all_payments = async_return([])
+    
+    output_dto = await list_all_payments_usecase.execute()
+    
+    assert len(output_dto.payments) == 0
+    payment_repository.list_all_payments.await_count == 1
+
+@pytest.mark.asyncio
+async def test_list_all_payments_none(list_all_payments_usecase, payment_repository):
+    payment_repository.list_all_payments = async_return(None)
     
     output_dto = await list_all_payments_usecase.execute()
     

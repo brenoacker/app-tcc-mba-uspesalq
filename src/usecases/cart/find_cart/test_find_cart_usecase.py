@@ -6,8 +6,7 @@ import pytest
 from domain.__seedwork.test_utils import (async_return, async_side_effect,
                                           run_async)
 from domain.cart.cart_entity import Cart
-from usecases.cart.find_cart.find_cart_dto import (FindCartInputDto,
-                                                   FindCartOutputDto)
+from usecases.cart.find_cart.find_cart_dto import FindCartInputDto
 from usecases.cart.find_cart.find_cart_usecase import FindCartUseCase
 
 
@@ -29,6 +28,7 @@ async def test_find_cart_success(find_cart_usecase, cart_repository):
     
     input_dto = FindCartInputDto(id=cart_id, user_id=user_id)
     
+    # Substituindo run_async por await
     output_dto = await find_cart_usecase.execute(input=input_dto)
     
     assert output_dto.id == cart_id
@@ -45,6 +45,7 @@ async def test_find_cart_not_found(find_cart_usecase, cart_repository):
     input_dto = FindCartInputDto(id=cart_id, user_id=user_id)
     
     with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
         await find_cart_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"Cart with id '{cart_id}' not found"
     cart_repository.find_cart.assert_awaited_once_with(cart_id=cart_id, user_id=user_id)

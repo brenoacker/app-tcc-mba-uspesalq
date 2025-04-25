@@ -7,8 +7,7 @@ from domain.__seedwork.test_utils import (async_return, async_side_effect,
                                           run_async)
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
-from usecases.product.add_product.add_product_dto import (AddProductInputDto,
-                                                          AddProductOutputDto)
+from usecases.product.add_product.add_product_dto import AddProductInputDto
 from usecases.product.add_product.add_product_usecase import AddProductUseCase
 
 
@@ -44,7 +43,7 @@ async def test_add_product_success(add_product_usecase, product_repository):
     assert output_dto.category == product_category
     product_repository.find_product_by_name.assert_awaited_once_with(name=product_name)
     product_repository.find_product.assert_awaited_once_with(product_id=product_id)
-    assert product_repository.add_product.await_count == 1
+    product_repository.add_product.await_count == 1
 
 @pytest.mark.asyncio
 async def test_add_product_name_already_registered(add_product_usecase, product_repository):

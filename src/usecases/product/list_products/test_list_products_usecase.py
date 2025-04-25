@@ -4,18 +4,19 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
-from usecases.product.list_products.list_products_dto import \
-    ListProductsOutputDto
 from usecases.product.list_products.list_products_usecase import \
     ListProductsUseCase
 
 
 @pytest.fixture
 def product_repository():
-    return Mock()
+    repo = Mock()
+    repo.list_products = AsyncMock()
+    return repo
 
 @pytest.fixture
 def list_products_usecase(product_repository):

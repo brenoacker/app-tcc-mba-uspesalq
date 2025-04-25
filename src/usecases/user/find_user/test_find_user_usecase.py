@@ -3,11 +3,11 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
-from usecases.user.find_user.find_user_dto import (FindUserInputDto,
-                                                   FindUserOutputDto)
+from usecases.user.find_user.find_user_dto import FindUserInputDto
 from usecases.user.find_user.find_user_usecase import FindUserUseCase
 
 
@@ -27,6 +27,7 @@ async def test_find_user_success(find_user_usecase, user_repository):
     
     input_dto = FindUserInputDto(id=user_id)
     
+    # Substituindo run_async por await
     output_dto = await find_user_usecase.execute(input=input_dto)
     
     assert output_dto.id == user_id
@@ -36,7 +37,8 @@ async def test_find_user_success(find_user_usecase, user_repository):
     assert output_dto.gender == UserGender.FEMALE
     assert output_dto.phone_number == "1234567890"
     assert output_dto.password == "password"
-    user_repository.find_user.assert_awaited_once_with()
+    # Substituindo assertion style antigo
+    assert user_repository.find_user.await_count == 1
 
 @pytest.mark.asyncio
 async def test_find_user_not_found(find_user_usecase, user_repository):
@@ -46,6 +48,8 @@ async def test_find_user_not_found(find_user_usecase, user_repository):
     input_dto = FindUserInputDto(id=user_id)
     
     with pytest.raises(ValueError) as excinfo:
-        run_async(find_user_usecase.execute(input=input_dto))
+        # Substituindo run_async por await
+        await find_user_usecase.execute(input=input_dto)
     assert str(excinfo.value) == f"User with id '{user_id}' not found"
-    user_repository.find_user.assert_awaited_once_with()
+    # Substituindo assertion style antigo
+    assert user_repository.find_user.await_count == 1

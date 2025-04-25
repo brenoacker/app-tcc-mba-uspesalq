@@ -1,18 +1,17 @@
 """Exemplos de uso da telemetria e do cliente HTTP instrumentado."""
-import time
 import asyncio
-import requests
+import time
+
 import httpx
+import requests
 
 from infrastructure.observability.http_client import InstrumentedHttpClient
-from infrastructure.observability.telemetry import create_span, record_exception
 from infrastructure.observability.metrics import (
-    increment_internal_request,
-    increment_external_request,
-    record_internal_request_duration,
-    record_external_request_duration,
-    increment_error
-)
+    increment_error, increment_external_request, increment_internal_request,
+    record_external_request_duration, record_internal_request_duration)
+from infrastructure.observability.telemetry import (create_span,
+                                                    record_exception)
+
 
 # Exemplo 1: Uso do cliente HTTP instrumentado para requisições síncronas
 def exemplo_get_sincrono():

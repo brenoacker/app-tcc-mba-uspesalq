@@ -11,7 +11,6 @@ from domain.cart_item.cart_item_repository_interface import \
 from infrastructure.cart.sqlalchemy.cart_model import CartModel
 from infrastructure.cart_item.sqlalchemy.cart_item_model import CartItemModel
 from infrastructure.logging_config import logger
-from usecases.cart_item.list_items.list_items_dto import ListItemsOutputDto
 
 
 class CartItemRepository(CartItemRepositoryInterface):

@@ -3,7 +3,8 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from usecases.user.delete_user.delete_user_dto import (DeleteUserInputDto,
                                                        DeleteUserOutputDto)
 from usecases.user.delete_user.delete_user_usecase import DeleteUserUseCase
@@ -28,4 +29,4 @@ async def test_delete_user_success(delete_user_usecase, user_repository):
 
     # Assert
     assert isinstance(output_dto, DeleteUserOutputDto)
-    user_repository.delete_user.assert_awaited_once_with()
+    user_repository.delete_user.await_count == 1

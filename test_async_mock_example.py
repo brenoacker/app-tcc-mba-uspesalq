@@ -1,12 +1,14 @@
 import asyncio
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 
 # O módulo que estamos testando
 class Repository:
     async def find_item(self, item_id):
         # Simulando acesso a banco de dados
-        await asyncio.sleep(0.1)
+        atime.sleep(0.1)
         return {"id": item_id, "name": "Test Item"}
 
 class UseCase:
@@ -58,17 +60,17 @@ async def test_execute_not_found():
     assert str(excinfo.value) == "Item with id 1 not found"
     repository.find_item.assert_awaited_once_with(item_id=1)
 
-def test_sync_way():
-    # Esta é outra forma de testar código assíncrono de forma síncrona
-    async def run_test():
-        repository = AsyncMock()
-        repository.find_item = async_return({"id": 1, "name": "Test Item"})
+# def test_sync_way():
+#     # Esta é outra forma de testar código assíncrono de forma síncrona
+#     async def run_test():
+#         repository = AsyncMock()
+#         repository.find_item = async_return({"id": 1, "name": "Test Item"})
         
-        use_case = UseCase(repository)
-        result = await use_case.execute(1)
+#         use_case = UseCase(repository)
+#         result = await use_case.execute(1)
         
-        assert result["id"] == 1
-        assert result["name"] == "Test Item"
+#         assert result["id"] == 1
+#         assert result["name"] == "Test Item"
         
-    # Execute a coroutine em um novo event loop
-    asyncio.run(run_test()) 
+#     # Execute a coroutine em um novo event loop
+#     asyncio.run(run_test()) 

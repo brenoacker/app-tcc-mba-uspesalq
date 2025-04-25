@@ -1,5 +1,4 @@
 import uuid
-from http.client import HTTPException
 
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.user.user_entity import User

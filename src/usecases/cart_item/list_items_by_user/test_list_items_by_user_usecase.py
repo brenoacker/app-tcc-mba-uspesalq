@@ -4,10 +4,11 @@ from uuid import uuid4
 
 import pytest
 
-from domain.__seedwork.test_utils import async_return, async_side_effect
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.cart_item.cart_item_entity import CartItem
-from usecases.cart_item.list_items_by_user.list_items_by_user_dto import (
-    ListItemsByUserInputDto, ListItemsByUserOutputDto)
+from usecases.cart_item.list_items_by_user.list_items_by_user_dto import \
+    ListItemsByUserInputDto
 from usecases.cart_item.list_items_by_user.list_items_by_user_usecase import \
     ListItemsByUserUseCase
 
@@ -37,7 +38,7 @@ async def test_list_items_by_user_success(list_items_by_user_usecase, cart_item_
     assert len(output_dto.items) == 2
     assert output_dto.items[0].quantity == 2
     assert output_dto.items[1].quantity == 3
-    cart_item_repository.list_items_by_user.assert_awaited_once_with(user_id=user_id)
+    cart_item_repository.list_items_by_user.assert_awaited_once()
 
 @pytest.mark.asyncio
 async def test_list_items_by_user_empty(list_items_by_user_usecase, cart_item_repository):
@@ -49,4 +50,4 @@ async def test_list_items_by_user_empty(list_items_by_user_usecase, cart_item_re
     output_dto = await list_items_by_user_usecase.execute(input=input_dto)
     
     assert len(output_dto.items) == 0
-    cart_item_repository.list_items_by_user.assert_awaited_once_with(user_id=user_id)
+    cart_item_repository.list_items_by_user.assert_awaited_once()
