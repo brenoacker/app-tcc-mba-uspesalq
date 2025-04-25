@@ -42,7 +42,7 @@ src/
 └── infrastructure/   # External interfaces (DB, API, etc.)
     ├── api/          # API implementation
     ├── messaging/    # Messaging components
-    └── observability/# Monitoring and observability
+    └── observability/ # Monitoring and observability
 ```
 
 See the [Project Structure](Project-Structure) page for more details.
