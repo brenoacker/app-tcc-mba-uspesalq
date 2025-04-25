@@ -25,8 +25,7 @@ class Cart:
         if total_price < 0:
             raise Exception("total_price must be a positive float")
         
-        # Converte para Decimal e define a precisão para duas casas decimais
-        total_price_decimal = Decimal(total_price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        # Converts to Decimal and sets the precision to two decimal places
         return float(total_price_decimal)
 
     def validate(self):
