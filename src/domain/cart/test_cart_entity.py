@@ -2,10 +2,12 @@ from uuid import uuid4
 
 import pytest
 
+from domain.__seedwork.test_utils import run_async
 from domain.cart.cart_entity import Cart
 
 
-def test_cart_creation():
+@pytest.mark.asyncio
+async def test_cart_creation():
     cart_id = uuid4()
     user_id = uuid4()
     total_price = 100.0
@@ -16,7 +18,8 @@ def test_cart_creation():
     assert cart.user_id == user_id
     assert cart.total_price == total_price
 
-def test_cart_invalid_id():
+@pytest.mark.asyncio
+async def test_cart_invalid_id():
     user_id = uuid4()
     total_price = 100.0
 
@@ -24,7 +27,8 @@ def test_cart_invalid_id():
         Cart(id="invalid_uuid", user_id=user_id, total_price=total_price)
     assert str(excinfo.value) == "id must be an UUID"
 
-def test_cart_invalid_user_id():
+@pytest.mark.asyncio
+async def test_cart_invalid_user_id():
     cart_id = uuid4()
     total_price = 100.0
 
@@ -32,7 +36,8 @@ def test_cart_invalid_user_id():
         Cart(id=cart_id, user_id="invalid_uuid", total_price=total_price)
     assert str(excinfo.value) == "user_id must be an UUID"
 
-def test_cart_invalid_total_price():
+@pytest.mark.asyncio
+async def test_cart_invalid_total_price():
     cart_id = uuid4()
     user_id = uuid4()
 

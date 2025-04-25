@@ -9,8 +9,8 @@ class DeleteUserUseCase(UseCaseInterface):
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def execute(self, input: DeleteUserInputDto) -> DeleteUserOutputDto:
+    async def execute(self, input: DeleteUserInputDto) -> DeleteUserOutputDto:
 
-        self.user_repository.delete_user(user_id=input.id)
+        await self.user_repository.delete_user(user_id=input.id)
 
         return DeleteUserOutputDto()

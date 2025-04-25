@@ -2,6 +2,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.product.product_category_enum import ProductCategory
 from infrastructure.api.database import Base
 from infrastructure.product.sqlalchemy.product_model import (
@@ -21,7 +23,8 @@ def session(engine):
     session.close()
     Base.metadata.drop_all(engine)
 
-def test_product_model_mapping(session):
+@pytest.mark.asyncio
+async def test_product_model_mapping(session):
     product = ProductModel(
         name="Product A",
         price=10.0,
@@ -36,7 +39,8 @@ def test_product_model_mapping(session):
     assert retrieved_product.price == 10.0
     assert retrieved_product.category == ProductCategory.BURGER
 
-def test_product_category_type():
+@pytest.mark.asyncio
+async def test_product_category_type():
     product_category_type = ProductCategoryType()
     
     # Teste com valor do tipo ProductCategory

@@ -9,9 +9,9 @@ class UpdateProductUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, input: UpdateProductInputDto) -> UpdateProductOutputDto:
+    async def execute(self, input: UpdateProductInputDto) -> UpdateProductOutputDto:
         
-        product = self.product_repository.find_product(product_id=input.id)
+        product = await self.product_repository.find_product(product_id=input.id)
 
         if not product:
             raise ValueError(f"Product with id '{input.id}' not found")
@@ -21,6 +21,6 @@ class UpdateProductUseCase(UseCaseInterface):
         product.price = input.price
         product.category = input.category
 
-        self.product_repository.update_product(product=product)
+        await self.product_repository.update_product(product=product)
 
         return UpdateProductOutputDto(id=product.id, name=product.name, price=product.price, category=product.category)

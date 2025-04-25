@@ -1,94 +1,102 @@
-# from unittest.mock import Mock, patch
-# from uuid import uuid4
+import random
+from unittest.mock import AsyncMock, Mock, patch
+from uuid import uuid4
 
-# import pytest
+import pytest
 
-# from domain.cart.cart_entity import Cart
-# from domain.cart_item.cart_item_entity import CartItem
-# from domain.product.product_entity import Product
-# from usecases.cart.update_cart.update_cart_dto import (UpdateCartInputDto,
-#                                                        UpdateCartItemDto)
-# from usecases.cart.update_cart.update_cart_usecase import UpdateCartUseCase
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
+from domain.cart.cart_entity import Cart
+from domain.cart_item.cart_item_entity import CartItem
+from domain.product.product_category_enum import ProductCategory
+from domain.product.product_entity import Product
+from usecases.cart.update_cart.update_cart_dto import (UpdateCartInputDto,
+                                                       UpdateCartItemDto,
+                                                       UpdateCartOutputDto)
+from usecases.cart.update_cart.update_cart_usecase import UpdateCartUseCase
 
 
-# @pytest.fixture
-# def cart_repository():
-#     return Mock()
+@pytest.fixture
+def cart_repository():
+    repo = Mock()
+    repo.find_cart = AsyncMock()
+    repo.find_items_by_cart_id = AsyncMock()
+    return repo
 
-# @pytest.fixture
-# def cart_item_repository():
-#     return Mock()
+@pytest.fixture
+def cart_item_repository():
+    return AsyncMock()
 
-# @pytest.fixture
-# def product_repository():
-#     return Mock()
+@pytest.fixture
+def product_repository():
+    return AsyncMock()
 
-# @pytest.fixture
-# def update_cart_usecase(cart_repository, cart_item_repository, product_repository):
-#     return UpdateCartUseCase(cart_repository, cart_item_repository, product_repository)
+@pytest.fixture
+def update_cart_usecase(cart_repository, cart_item_repository, product_repository):
+    return UpdateCartUseCase(cart_repository, cart_item_repository, product_repository)
 
-# def test_update_cart_success(update_cart_usecase, cart_repository, cart_item_repository, product_repository):
-#     user_id = uuid4()
-#     cart_id = uuid4()
-#     product_id = uuid4()
-#     cart_repository.find_cart.return_value = Cart(id=cart_id, user_id=user_id, total_price=100.0)
-#     cart_item_repository.find_items_by_cart_id.return_value = [
-#         CartItem(id=uuid4(), cart_id=cart_id, product_id=product_id, quantity=1)
-#     ]
-#     product_repository.find_product.return_value = Product(id=product_id, name="Test Product", price=50.0, category="Test Category")
+@pytest.mark.asyncio
+async def test_update_cart_success(update_cart_usecase, cart_repository, cart_item_repository, product_repository):
+    user_id = uuid4()
+    cart_id = uuid4()
+    product_id = random.randint(1,10)
     
-#     input_dto = UpdateCartInputDto(items=[UpdateCartItemDto(product_id=product_id, quantity=2)])
+    product_price = 50.0
+    product = Product(id=product_id, name="Test Product", price=product_price, category=ProductCategory.BURGER)
     
-#     output_dto = update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
+    cart = Cart(id=cart_id, user_id=user_id, total_price=0.0)
     
-#     assert output_dto.id == cart_id
-#     assert output_dto.total_price == 100.0
-#     cart_repository.find_cart.assert_called_once_with(cart_id=cart_id, user_id=user_id)
-#     cart_item_repository.find_items_by_cart_id.assert_called_once_with(cart_id=cart_id)
-#     product_repository.find_product.assert_called_once_with(product_id=product_id)
-#     cart_repository.update_cart.assert_called_once()
+    # Criar um item de carrinho para evitar o erro "Cart items not found for this cart"
+    cart_item = CartItem(id=uuid4(), cart_id=cart_id, product_id=product_id, quantity=1)
+    
+    cart_repository.find_cart = async_return(cart)
+    product_repository.find_product = async_return(product)
+    cart_item_repository.find_items_by_cart_id = async_return([cart_item])
+    cart_repository.update_cart = async_return(Cart(id=cart_id, user_id=user_id, total_price=product_price))
+    cart_item_repository.update_item = async_return(cart_item)
+    
+    input_dto = UpdateCartInputDto(items=[UpdateCartItemDto(product_id=product_id, quantity=1)])
+    
+    # Substituindo run_async por await
+    output_dto = await update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
+    
+    assert output_dto.id == cart_id
+    assert output_dto.user_id == user_id
+    assert output_dto.total_price == product_price
+    
+    assert cart_repository.find_cart.called
+    assert cart_item_repository.find_items_by_cart_id.called
+    assert cart_repository.update_cart.called
 
-# def test_update_cart_not_found(update_cart_usecase, cart_repository):
-#     user_id = uuid4()
-#     cart_id = uuid4()
-#     cart_repository.find_cart.return_value = None
+@pytest.mark.asyncio
+async def test_update_cart_cart_not_found(update_cart_usecase, cart_repository):
+    user_id = uuid4()
+    cart_id = uuid4()
+    product_id = random.randint(1,10)
+    cart_repository.find_cart = async_return(None)
+    input_dto = UpdateCartInputDto(items=[UpdateCartItemDto(product_id=product_id, quantity=1)])
     
-#     input_dto = UpdateCartInputDto(items=[])
+    with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
+        await update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
     
-#     with pytest.raises(ValueError) as excinfo:
-#         update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
-#     assert str(excinfo.value) == "Cart not found"
-#     cart_repository.find_cart.assert_called_once_with(cart_id=cart_id, user_id=user_id)
+    assert str(excinfo.value) == f"Cart not found"
+    cart_repository.find_cart.assert_awaited_once()
 
-# def test_update_cart_items_not_found(update_cart_usecase, cart_repository, cart_item_repository):
-#     user_id = uuid4()
-#     cart_id = uuid4()
-#     cart_repository.find_cart.return_value = Cart(id=cart_id, user_id=user_id, total_price=100.0)
-#     cart_item_repository.find_items_by_cart_id.return_value = []
+@pytest.mark.asyncio
+async def test_update_cart_items_not_found(update_cart_usecase, cart_repository, cart_item_repository):
+    user_id = uuid4()
+    cart_id = uuid4()
+    product_id = random.randint(1,10)
+    cart = Cart(id=cart_id, user_id=user_id, total_price=0.0)
+    cart_repository.find_cart = async_return(cart)
+    cart_item_repository.find_items_by_cart_id = async_return([])
+    input_dto = UpdateCartInputDto(items=[UpdateCartItemDto(product_id=product_id, quantity=1)])
     
-#     input_dto = UpdateCartInputDto(items=[])
+    with pytest.raises(ValueError) as excinfo:
+        # Substituindo run_async por await
+        await update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
     
-#     with pytest.raises(ValueError) as excinfo:
-#         update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
-#     assert str(excinfo.value) == "Cart items not found for this cart"
-#     cart_repository.find_cart.assert_called_once_with(cart_id=cart_id, user_id=user_id)
-#     cart_item_repository.find_items_by_cart_id.assert_called_once_with(cart_id=cart_id)
-
-# def test_update_cart_product_not_found(update_cart_usecase, cart_repository, cart_item_repository, product_repository):
-#     user_id = uuid4()
-#     cart_id = uuid4()
-#     product_id = uuid4()
-#     cart_repository.find_cart.return_value = Cart(id=cart_id, user_id=user_id, total_price=100.0)
-#     cart_item_repository.find_items_by_cart_id.return_value = [
-#         CartItem(id=uuid4(), cart_id=cart_id, product_id=product_id, quantity=1)
-#     ]
-#     product_repository.find_product.return_value = None
-    
-#     input_dto = UpdateCartInputDto(items=[UpdateCartItemDto(product_id=product_id, quantity=2)])
-    
-#     with pytest.raises(ValueError) as excinfo:
-#         update_cart_usecase.execute(user_id=user_id, cart_id=cart_id, input=input_dto)
-#     assert str(excinfo.value) == f"Product with code '{product_id}' not found"
-#     cart_repository.find_cart.assert_called_once_with(cart_id=cart_id, user_id=user_id)
-#     cart_item_repository.find_items_by_cart_id.assert_called_once_with(cart_id=cart_id)
-#     product_repository.find_product.assert_called_once_with(product_id=product_id)
+    assert str(excinfo.value) == f"Cart items not found for this cart"
+    cart_repository.find_cart.assert_awaited_once()
+    cart_item_repository.find_items_by_cart_id.assert_awaited_once()

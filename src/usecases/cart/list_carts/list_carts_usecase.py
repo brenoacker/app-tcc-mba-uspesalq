@@ -9,9 +9,9 @@ class ListCartsUseCase(UseCaseInterface):
     def __init__(self, cart_repository: CartRepositoryInterface):
         self.cart_repository = cart_repository
 
-    def execute(self, input: ListCartsInputDto) -> ListCartsOutputDto:
+    async def execute(self, input: ListCartsInputDto) -> ListCartsOutputDto:
 
-        list_carts_found = self.cart_repository.list_carts(user_id=input.user_id)
+        list_carts_found = await self.cart_repository.list_carts(user_id=input.user_id)
 
         if not list_carts_found:
             raise ValueError("No carts found")

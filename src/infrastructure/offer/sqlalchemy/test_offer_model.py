@@ -4,6 +4,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.offer.offer_type_enum import OfferType
 from infrastructure.api.database import Base
 from infrastructure.api.test_database import CartModel, OrderModel, UserModel
@@ -24,7 +26,8 @@ def session(engine):
     session.close()
     Base.metadata.drop_all(engine)
 
-def test_offer_model_mapping(session):
+@pytest.mark.asyncio
+async def test_offer_model_mapping(session):
     offer = OfferModel(
         start_date=datetime(2023, 1, 1),
         end_date=datetime(2023, 12, 31),
@@ -41,12 +44,14 @@ def test_offer_model_mapping(session):
     assert retrieved_offer.discount_type == OfferType.PERCENTAGE
     assert retrieved_offer.discount_value == 10.0
 
-def test_offer_discount_type():
+@pytest.mark.asyncio
+async def test_offer_discount_type():
     offer_discount_type = OfferDiscountType()
     assert offer_discount_type.process_bind_param(OfferType.PERCENTAGE, None) == 'percentage'
     assert offer_discount_type.process_result_value('percentage', None) == OfferType.PERCENTAGE
 
-def test_offer_discount_type_none():
+@pytest.mark.asyncio
+async def test_offer_discount_type_none():
     offer_discount_type = OfferDiscountType()
     assert offer_discount_type.process_bind_param(None, None) is None
     assert offer_discount_type.process_result_value(None, None) is None

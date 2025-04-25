@@ -9,3 +9,4 @@ class RemoveCartInputDto(BaseModel):
 
 class RemoveCartOutputDto(BaseModel):
     id: UUID
+    user_id: UUID

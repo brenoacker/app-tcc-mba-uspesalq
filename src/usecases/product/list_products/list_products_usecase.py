@@ -9,9 +9,9 @@ class ListProductsUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self) -> ListProductsOutputDto:
+    async def execute(self) -> ListProductsOutputDto:
 
-        products = self.product_repository.list_products()
+        products = await self.product_repository.list_products()
 
         if products is None:
             return ListProductsOutputDto(products=[])

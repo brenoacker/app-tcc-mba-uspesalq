@@ -9,9 +9,9 @@ class FindUserUseCase(UseCaseInterface):
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def execute(self, input: FindUserInputDto) -> FindUserOutputDto:
+    async def execute(self, input: FindUserInputDto) -> FindUserOutputDto:
         
-        user = self.user_repository.find_user(user_id=input.id)
+        user = await self.user_repository.find_user(user_id=input.id)
 
         if user is None:
             raise ValueError(f"User with id '{input.id}' not found")

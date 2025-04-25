@@ -9,6 +9,6 @@ class DeleteProductUseCase(UseCaseInterface):
     def __init__(self, product_repository: ProductRepositoryInterface):
         self.product_repository = product_repository
 
-    def execute(self, input: DeleteProductInputDto) -> DeleteProductOutputDto:
-        self.product_repository.delete_product(product_id=input.id)
+    async def execute(self, input: DeleteProductInputDto) -> DeleteProductOutputDto:
+        await self.product_repository.delete_product(product_id=input.id)
         return DeleteProductOutputDto(id=input.id)

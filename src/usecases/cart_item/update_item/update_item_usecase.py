@@ -9,14 +9,14 @@ class UpdateItemUseCase(UseCaseInterface):
     def __init__(self, cart_item_repository: CartItemRepositoryInterface):
         self.cart_item_repository = cart_item_repository
 
-    def execute(self, cart_item_id, input: UpdateItemInputDto) -> UpdateItemOutputDto:
-        cart_item = self.cart_item_repository.find_item(item_id=cart_item_id)
+    async def execute(self, cart_item_id, input: UpdateItemInputDto) -> UpdateItemOutputDto:
+        cart_item = await self.cart_item_repository.find_item(item_id=cart_item_id)
 
         if cart_item is None:
             raise ValueError(f"Cart item with id '{cart_item_id}' not found")
 
         cart_item.quantity = input.quantity
 
-        self.cart_item_repository.update_item(item=cart_item)
+        await self.cart_item_repository.update_item(item=cart_item)
 
         return UpdateItemOutputDto(id=cart_item.id, cart_id=cart_item.cart_id, product_id=cart_item.product_id, quantity=cart_item.quantity)

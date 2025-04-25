@@ -1,8 +1,10 @@
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from src.usecases.offer.remove_all_offers.remove_all_offers_usecase import \
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
+from usecases.offer.remove_all_offers.remove_all_offers_usecase import \
     RemoveAllOffersUsecase
 
 
@@ -14,11 +16,13 @@ def offer_repository():
 def remove_all_offers_usecase(offer_repository):
     return RemoveAllOffersUsecase(offer_repository)
 
-def test_remove_all_offers_success(remove_all_offers_usecase, offer_repository):
+@pytest.mark.asyncio
+async def test_remove_all_offers_success(remove_all_offers_usecase, offer_repository):
     # Act
-    offer_repository.remove_all_offers.return_value = None
-    result = remove_all_offers_usecase.execute()
+    offer_repository.remove_all_offers = async_return(None)
+    # Substituindo run_async por await
+    result = await remove_all_offers_usecase.execute()
 
     # Assert
-    offer_repository.remove_all_offers.assert_called_once()
+    assert offer_repository.remove_all_offers.await_count == 1
     assert result is None

@@ -11,14 +11,14 @@ class FindPaymentUseCase(UseCaseInterface):
         self.payment_repository = payment_repository
         self.user_repository = user_repository
 
-    def execute(self, input: FindPaymentInputDto) -> FindPaymentOutputDto:
+    async def execute(self, input: FindPaymentInputDto) -> FindPaymentOutputDto:
 
-        user = self.user_repository.find_user(user_id=input.user_id)
+        user = await self.user_repository.find_user(user_id=input.user_id)
 
         if user is None:
             raise ValueError(f"User with id {input.user_id} not found")
 
-        payment = self.payment_repository.find_payment(payment_id=input.id)
+        payment = await self.payment_repository.find_payment(payment_id=input.id)
 
         if payment is None:
             raise ValueError(f"Payment with id {input.id} not found")

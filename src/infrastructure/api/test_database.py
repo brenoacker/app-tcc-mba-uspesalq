@@ -1,10 +1,13 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, Numeric,
                         String, create_engine)
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from infrastructure.api.database import Base, create_tables, get_session
 
 Base = declarative_base()
@@ -50,29 +53,37 @@ def engine():
     return create_engine('sqlite:///:memory:')
 
 @pytest.fixture
-def session(engine):
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return SessionLocal()
+def async_session():
+    """Create a mock async session"""
+    session = AsyncMock(spec=AsyncSession)
+    # The __aenter__ method should return the session itself for the async context manager
+    session.__aenter__.return_value = session
+    return session
 
 
-def test_get_session(mocker, session):
-    with patch('infrastructure.api.database.SessionLocal', return_value=session):
-        mock_close = mocker.patch.object(session, 'close', autospec=True)
-        gen = get_session()
-        db = next(gen)
-        assert db == session
-        next(gen, None)
-        mock_close.assert_called_once()
+@pytest.mark.asyncio
+async def test_get_session(mocker, async_session):
+    with patch('infrastructure.api.database.SessionLocal', return_value=async_session):
+        # Use async for to iterate through the async generator
+        async for db in get_session():
+            assert db == async_session
+        # Verify the session was properly closed
+        async_session.__aexit__.assert_called_once()
 
-def test_get_session_exception(session):
-    with patch('infrastructure.api.database.SessionLocal', return_value=session):
-        gen = get_session()
-        db = next(gen)
-        assert db == session
-        with pytest.raises(StopIteration):
-            next(gen)
+@pytest.mark.asyncio
+async def test_get_session_exception(async_session):
+    with patch('infrastructure.api.database.SessionLocal', return_value=async_session):
+        # Use async for to iterate through the async generator
+        async for db in get_session():
+            assert db == async_session
+            # The generator only yields once, so we'll exit the loop after the first iteration
+            break
+        
+        # Verify the session was properly set up
+        async_session.__aenter__.assert_called_once()
 
-def test_create_tables(engine):
+@pytest.mark.asyncio
+async def test_create_tables(engine):
     with patch('infrastructure.api.database.engine', engine):
         Base.metadata.create_all(bind=engine, tables=[UserModel.__table__, OfferModel.__table__, CartModel.__table__])
         Base.metadata.create_all(bind=engine, tables=[OrderModel.__table__])

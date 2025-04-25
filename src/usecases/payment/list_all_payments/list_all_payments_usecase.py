@@ -9,8 +9,8 @@ class ListAllPaymentsUseCase(UseCaseInterface):
     def __init__(self, payment_repository: PaymentRepositoryInterface):
         self.payment_repository = payment_repository
 
-    def execute(self) -> ListAllPaymentsOutputDto:
-        payments = self.payment_repository.list_all_payments()
+    async def execute(self) -> ListAllPaymentsOutputDto:
+        payments = await self.payment_repository.list_all_payments()
 
         if payments is None:
             return ListAllPaymentsOutputDto(payments=[])

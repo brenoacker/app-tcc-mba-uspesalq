@@ -4,12 +4,14 @@ from uuid import uuid4
 
 import pytest
 
+from domain.__seedwork.test_utils import run_async
 from domain.order.order_entity import Order
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
 
 
-def test_order_creation():
+@pytest.mark.asyncio
+async def test_order_creation():
     order_id = uuid4()
     user_id = uuid4()
     offer_id = random.randint(1, 100)
@@ -32,7 +34,8 @@ def test_order_creation():
     assert order.total_price == total_price
     assert order.type == type
 
-def test_order_invalid_id():
+@pytest.mark.asyncio
+async def test_order_invalid_id():
     user_id = uuid4()
     cart_id = uuid4()
     type = OrderType.DELIVERY
@@ -45,7 +48,8 @@ def test_order_invalid_id():
         Order(id="invalid_uuid", user_id=user_id, cart_id=cart_id,  total_price=total_price, type=type, status=status, created_at=created_at, updated_at=updated_at)
     assert str(excinfo.value) == "id must be an UUID"
 
-def test_order_invalid_user_id():
+@pytest.mark.asyncio
+async def test_order_invalid_user_id():
     order_id = uuid4()
     cart_id = uuid4()
     type = OrderType.DELIVERY
@@ -58,7 +62,8 @@ def test_order_invalid_user_id():
         Order(id=order_id, user_id="invalid_uuid", cart_id=cart_id,  total_price=total_price, type=type, status=status, created_at=created_at, updated_at=updated_at)
     assert str(excinfo.value) == "user_id must be an UUID"
 
-def test_order_invalid_total_price():
+@pytest.mark.asyncio
+async def test_order_invalid_total_price():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = uuid4()
@@ -75,7 +80,8 @@ def test_order_invalid_total_price():
         order.validate()
     assert str(excinfo.value) == "total_price must be a non-negative number"
 
-def test_order_invalid_status():
+@pytest.mark.asyncio
+async def test_order_invalid_status():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = uuid4()
@@ -88,7 +94,8 @@ def test_order_invalid_status():
         Order(id=order_id, user_id=user_id, total_price=total_price, type=type, cart_id=cart_id, status="invalid_status", created_at=created_at, updated_at=updated_at)
     assert str(excinfo.value) == "status must be an instance of OrderStatus"
 
-def test_order_invalid_dates():
+@pytest.mark.asyncio
+async def test_order_invalid_dates():
     order_id = uuid4()
     user_id = uuid4()
     cart_id= uuid4() 
@@ -104,7 +111,8 @@ def test_order_invalid_dates():
         Order(id=order_id, user_id=user_id, cart_id=cart_id, type=type, status=status, total_price=total_price, created_at=datetime.now(), updated_at="invalid_date")
     assert str(excinfo.value) == "updated_at must be a datetime object"
 
-def test_order_invalid_offer_id():
+@pytest.mark.asyncio
+async def test_order_invalid_offer_id():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = uuid4()
@@ -118,7 +126,8 @@ def test_order_invalid_offer_id():
         Order(id=order_id, user_id=user_id, cart_id=cart_id,  type=type, total_price=total_price, status=status, created_at=created_at, updated_at=updated_at, offer_id="invalid_uuid")
     assert str(excinfo.value) == "offer_id must be an int or None"
 
-def test_order_with_invalid_cart_id():
+@pytest.mark.asyncio
+async def test_order_with_invalid_cart_id():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = random.randint(1,100)
@@ -132,7 +141,8 @@ def test_order_with_invalid_cart_id():
         Order(id=order_id, user_id=user_id, cart_id=cart_id,  type=type, total_price=total_price, status=status, created_at=created_at, updated_at=updated_at, offer_id="invalid_uuid")
     assert str(excinfo.value) == "cart_id must be an UUID"
 
-def test_order_with_invalid_total_price():
+@pytest.mark.asyncio
+async def test_order_with_invalid_total_price():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = uuid4()
@@ -146,7 +156,8 @@ def test_order_with_invalid_total_price():
         Order(id=order_id, user_id=user_id, cart_id=cart_id,  type=type, total_price=total_price, status=status, created_at=created_at, updated_at=updated_at, offer_id="invalid_uuid")
     assert str(excinfo.value) == "total_price must be float"
 
-def test_order_with_invalid_type():
+@pytest.mark.asyncio
+async def test_order_with_invalid_type():
     order_id = uuid4()
     user_id = uuid4()
     cart_id = uuid4()

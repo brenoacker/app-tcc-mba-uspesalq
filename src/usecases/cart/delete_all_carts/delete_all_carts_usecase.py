@@ -6,7 +6,6 @@ class DeleteAllCartsUseCase(UseCaseInterface):
     def __init__(self, cart_repository: CartRepositoryInterface):
         self.cart_repository = cart_repository
 
-    def execute(self) -> None:
-        self.cart_repository.delete_all_carts()
-        
-        return None
+    async def execute(self, input=None) -> None:
+        await self.cart_repository.delete_all_carts()
+        return None 

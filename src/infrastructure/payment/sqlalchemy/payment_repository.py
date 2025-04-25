@@ -1,11 +1,11 @@
-
-import time
+import asyncio
 from typing import List
 from uuid import UUID
 
 import psycopg2
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm.session import Session
+from sqlalchemy import update
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from domain.payment.payment_entity import Payment
 from domain.payment.payment_repository_interface import \
@@ -14,94 +14,112 @@ from infrastructure.payment.sqlalchemy.payment_model import PaymentModel
 
 
 class PaymentRepository(PaymentRepositoryInterface):
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
-    def create_payment(self, payment: Payment) -> Payment:
+    async def create_payment(self, payment: Payment) -> Payment:
         max_retries = 3
         retries = 0
 
         while retries < max_retries:
             try:
-                self.session.add(PaymentModel(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status))
-                self.session.commit()
-                return Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status)
+                payment_model = PaymentModel(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status)
+                self.session.add(payment_model)
+                await self.session.commit()
+                # Evitando a chamada para refresh que causa uma consulta adicional ao banco
+                return payment
             except psycopg2.errors.DeadlockDetected:
-                self.session.rollback()
+                await self.session.rollback()
                 retries += 1
-                time.sleep(2 ** retries)  # Exponential backoff
-            except OperationalError as e:
-                self.session.rollback()
+                # Reduzindo o tempo de espera para melhorar throughput
+                await asyncio.sleep(0.1 * retries)  # Linear backoff com tempo menor
+            except Exception as e:
+                await self.session.rollback()
                 raise e
         raise Exception("Max retries exceeded for create_payment")
 
-    def execute_payment(self, payment: Payment) -> Payment:
+    async def execute_payment(self, payment: Payment) -> Payment:
         max_retries = 3
         retries = 0
 
         while retries < max_retries:
             try:
-                self.session.query(PaymentModel).filter(PaymentModel.id == payment.id).update(
-                    {
-                        "payment_method": payment.payment_method,
-                        "payment_card_gateway": payment.payment_card_gateway,
-                        "status": payment.status
-                    }
+                query = update(PaymentModel).where(PaymentModel.id == payment.id).values(
+                    payment_method=payment.payment_method,
+                    payment_card_gateway=payment.payment_card_gateway,
+                    status=payment.status
                 )
-                self.session.commit()
-
-                return Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status)
+                await self.session.execute(query)
+                await self.session.commit()
+                # Já temos todas as informações do payment, não precisamos consultar novamente
+                return payment
             
             except psycopg2.errors.DeadlockDetected:
-                self.session.rollback()
+                await self.session.rollback()
                 retries += 1
-                time.sleep(2 ** retries)  # Exponential backoff
-            except OperationalError as e:
-                self.session.rollback()
-                raise e
+                # Reduzindo o tempo de espera para melhorar throughput
+                await asyncio.sleep(0.1 * retries)  # Linear backoff com tempo menor
             except Exception as e:
-                self.session.rollback()
+                await self.session.rollback()
                 raise e
         raise Exception("Max retries exceeded for execute_payment")
+                
 
-    def find_payment(self, payment_id: UUID) -> Payment:
-        
-        payment_found = self.session.query(PaymentModel).filter(PaymentModel.id == payment_id).first()
+    async def find_payment(self, payment_id: UUID) -> Payment:
+        result = await self.session.execute(
+            select(PaymentModel).filter(PaymentModel.id == payment_id)
+        )
+        payment_found = result.scalars().first()
 
         if payment_found is None:
             return None
         
         return Payment(id=payment_found.id, user_id=payment_found.user_id, order_id=payment_found.order_id, payment_method=payment_found.payment_method, payment_card_gateway=payment_found.payment_card_gateway, status=payment_found.status)	
 
-    def find_payment_by_order_id(self, order_id: UUID) -> Payment:
+    async def list_payments(self, user_id: UUID) -> List[Payment]:
+        result = await self.session.execute(
+            select(PaymentModel).filter(PaymentModel.user_id == user_id)
+        )
+        payments_found = result.scalars().all()
+
+        if not payments_found:
+            return []
         
-        payment_found = self.session.query(PaymentModel).filter(PaymentModel.order_id == order_id).first()
+        return [Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status) for payment in payments_found]
+    
+    async def list_all_payments(self) -> List[Payment]:
+        result = await self.session.execute(select(PaymentModel))
+        payments_found = result.scalars().all()
+
+        if not payments_found:
+            return []
+        
+        return [
+            {
+                "id": payment.id,
+                "user_id": payment.user_id,
+                "order_id": payment.order_id,
+                "payment_method": payment.payment_method,
+                "payment_card_gateway": payment.payment_card_gateway,
+                "status": payment.status
+            }
+            for payment in payments_found
+        ]
+        
+    async def delete_all_payments(self) -> None:
+        await self.session.execute(
+            PaymentModel.__table__.delete()
+        )
+        await self.session.commit()
+        
+    
+    async def find_payment_by_order_id(self, order_id: UUID) -> Payment:
+        result = await self.session.execute(
+            select(PaymentModel).filter(PaymentModel.order_id == order_id)
+        )
+        payment_found = result.scalars().first()
 
         if payment_found is None:
             return None
         
         return Payment(id=payment_found.id, user_id=payment_found.user_id, order_id=payment_found.order_id, payment_method=payment_found.payment_method, payment_card_gateway=payment_found.payment_card_gateway, status=payment_found.status)
-
-    def list_payments(self, user_id: UUID) -> List[Payment]:
-        
-        payments_found: List[PaymentModel] = self.session.query(PaymentModel).filter(PaymentModel.user_id == user_id).all()
-
-        if not payments_found:
-            return []
-        
-        return [Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status) for payment in payments_found]
-    
-    def list_all_payments(self) -> List[Payment]:
-        
-        payments_found: List[PaymentModel] = self.session.query(PaymentModel).all()
-
-        if not payments_found:
-            return []
-        
-        return [Payment(id=payment.id, user_id=payment.user_id, order_id=payment.order_id, payment_method=payment.payment_method, payment_card_gateway=payment.payment_card_gateway, status=payment.status) for payment in payments_found]
-    
-    def delete_all_payments(self) -> None:
-        self.session.query(PaymentModel).delete()
-        self.session.commit()
-
-        return None

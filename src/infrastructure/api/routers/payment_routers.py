@@ -3,9 +3,8 @@ import traceback
 from datetime import datetime
 from uuid import UUID
 
-import requests
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Header, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.order.order_status_enum import OrderStatus
 from domain.payment.payment_status_enum import PaymentStatus
@@ -40,83 +39,71 @@ from usecases.payment.list_payments.list_payments_usecase import \
 router = APIRouter(prefix="/payment", tags=["Payment"])
 
 @router.post("/{order_id}", status_code=201)
-def execute_payment(
-    request: ExecutePaymentInputDto, 
-    order_id: UUID, 
-    user_id: UUID = Header(...),
-    session: Session = Depends(get_session)
-):
+async def execute_payment(request: ExecutePaymentInputDto, order_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
         user_repository = UserRepository(session=session)
         order_repository = OrderRepository(session=session)
         usecase = ExecutePaymentUseCase(payment_repository=payment_repository, user_repository=user_repository, order_repository=order_repository)
-        
-        with session.begin():
-            output = usecase.execute(order_id=order_id, user_id=user_id, input=ExecutePaymentInputDto(payment_method=request.payment_method, payment_card_gateway=request.payment_card_gateway))
-        
-            if output.status != PaymentStatus.PAID:
-                raise ValueError(f"Payment not executed: {output}")
-            else:
-                publish_message("order_updates", {"order_id": str(order_id), "status": OrderStatus.CONFIRMED.value})
-            
+        output = await usecase.execute(order_id=order_id, user_id=user_id, input=ExecutePaymentInputDto(payment_method=request.payment_method, payment_card_gateway=request.payment_card_gateway))
         return output
     except ValueError as e:
-        session.rollback()
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
     except Exception as e:
-        session.rollback()
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
     
-def update_order_status_after_payment(order_id: UUID, user_id: UUID, status: OrderStatus):
-    # time.sleep(5)
-    response = requests.patch(url=f"http://localhost:8000/order/internal/{order_id}",json={"status": status.value}, headers={"user-id": str(user_id)})
-    if response.status_code != 200:
-        raise Exception(f"Error updating order status: {response.text}")
+# def update_order_status_after_payment(order_id: UUID, user_id: UUID, status: OrderStatus):
+#     # time.sleep(5)
+#     response = requests.patch(url=f"http://localhost:8000/order/internal/{order_id}",json={"status": status.value}, headers={"user-id": str(user_id)})
+#     if response.status_code != 200:
+#         raise Exception(f"Error updating order status: {response.text}")
 
 @router.get("/", status_code=200)
-def list_payments(user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def list_payments(user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
         usecase = ListPaymentsUseCase(payment_repository=payment_repository)
-        output = usecase.execute(input=ListPaymentsInputDto(user_id=user_id))
+        output = await usecase.execute(input=ListPaymentsInputDto(user_id=user_id))
         return output
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
     
 @router.get("/id/{payment_id}", status_code=200)
-def find_payment(payment_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def find_payment(payment_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
         user_repository = UserRepository(session=session)
         usecase = FindPaymentUseCase(payment_repository=payment_repository, user_repository=user_repository)
-        output = usecase.execute(input=FindPaymentInputDto(id=payment_id, user_id=user_id))
+        output = await usecase.execute(input=FindPaymentInputDto(id=payment_id, user_id=user_id))
         return output
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
     
 @router.get("/order/{order_id}", status_code=200)
-def find_payment_by_order_id(order_id: UUID, user_id: UUID = Header(...), session: Session = Depends(get_session)):
+async def find_payment_by_order_id(order_id: UUID, user_id: UUID = Header(...), session: AsyncSession = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
         user_repository = UserRepository(session=session)
         usecase = FindPaymentByOrderIdUsecase(payment_repository=payment_repository, user_repository=user_repository)
-        output = usecase.execute(input=FindPaymentByOrderIdInputDto(order_id=order_id, user_id=user_id))
+        output = await usecase.execute(input=FindPaymentByOrderIdInputDto(order_id=order_id, user_id=user_id))
         return output
+    except ValueError as e:
+        error_trace = traceback.format_exc()
+        raise HTTPException(status_code=404, detail=f"{str(e)}\n{error_trace}") from e
     except Exception as e:
         error_trace = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e
 
 @router.get("/all_payments", status_code=200)
-def list_all_payments(session: Session = Depends(get_session)):
+async def list_all_payments(session: AsyncSession = Depends(get_session)):
     try:
         payment_repository = PaymentRepository(session=session)
         usecase = ListAllPaymentsUseCase(payment_repository=payment_repository)
-        output = usecase.execute()
+        output = await usecase.execute()
         return output
     except Exception as e:
         error_trace = traceback.format_exc()

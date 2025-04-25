@@ -12,6 +12,8 @@ from infrastructure.order.sqlalchemy.order_model import (OrderStatusType,
                                                          OrderTType)
 from infrastructure.user.sqlalchemy.user_model import UserGenderType
 
+from domain.__seedwork.test_utils import run_async, async_return, async_side_effect
+
 Base = declarative_base()
 
 class UserModel(Base):
@@ -86,7 +88,8 @@ def created_user(session):
 
     return user
 
-def test_cart_model_mapping(session):
+@pytest.mark.asyncio
+async def test_cart_model_mapping(session):
     cart_id = str(uuid4())
     user_id = created_user(session).id
     session.commit()

@@ -6,6 +6,8 @@ from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, Numeric,
                         String, create_engine)
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
 from domain.payment.payment_card_gateway_enum import PaymentCardGateway
@@ -127,7 +129,8 @@ def create_order(session, user_id, cart_id):
     return order_id
 
 
-def test_payment_model_mapping(session):
+@pytest.mark.asyncio
+async def test_payment_model_mapping(session):
     payment_id = str(uuid4())
     user_id = create_user(session)
     cart_id = create_cart(session, user_id)
@@ -153,7 +156,8 @@ def test_payment_model_mapping(session):
     assert retrieved_payment.payment_card_gateway == PaymentCardGateway.ADYEN
     assert retrieved_payment.status == PaymentStatus.PAID
 
-def test_payment_method_type():
+@pytest.mark.asyncio
+async def test_payment_method_type():
     payment_method_type = PaymentMethodType()
     
     # Teste com valor do tipo PaymentMethod
@@ -171,7 +175,8 @@ def test_payment_method_type():
     # Teste com valor None
     assert payment_method_type.process_result_value(None, None) is None
 
-def test_payment_card_gateway_type():
+@pytest.mark.asyncio
+async def test_payment_card_gateway_type():
     payment_card_gateway_type = PaymentCardGatewayType()
     
     # Teste com valor do tipo PaymentCardGateway
@@ -189,7 +194,8 @@ def test_payment_card_gateway_type():
     # Teste com valor None
     assert payment_card_gateway_type.process_result_value(None, None) is None
 
-def test_payment_status_type():
+@pytest.mark.asyncio
+async def test_payment_status_type():
     payment_status_type = PaymentStatusType()
     
     # Teste com valor do tipo PaymentStatus

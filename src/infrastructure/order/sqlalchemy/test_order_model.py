@@ -6,6 +6,8 @@ from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, Numeric,
                         String, create_engine)
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.order.order_status_enum import OrderStatus
 from domain.order.order_type_enum import OrderType
 from infrastructure.order.sqlalchemy.order_model import (OrderModel,
@@ -68,7 +70,8 @@ def session(engine, tables):
     yield session
     session.close()
 
-def test_order_model_mapping(session):
+@pytest.mark.asyncio
+async def test_order_model_mapping(session):
     datetime_now = datetime.now()
 
     order = OrderModel(
@@ -97,28 +100,32 @@ def test_order_model_mapping(session):
     assert retrieved_order.created_at == datetime_now
     assert retrieved_order.updated_at == datetime_now
 
-def test_order_status_type(session):
+@pytest.mark.asyncio
+async def test_order_status_type(session):
     order_status_type = OrderStatusType()
     order_status = OrderStatus.PENDING
 
     assert order_status_type.process_bind_param(order_status, None) == order_status.value
     assert order_status_type.process_result_value(order_status.value, None) == order_status
 
-def test_order_status_type_none(session):
+@pytest.mark.asyncio
+async def test_order_status_type_none(session):
     order_status_type = OrderStatusType()
     order_status = None
 
     assert order_status_type.process_bind_param(order_status, None) == order_status
     assert order_status_type.process_result_value(order_status, None) == order_status
 
-def test_order_t_type(session):
+@pytest.mark.asyncio
+async def test_order_t_type(session):
     order_t_type = OrderTType()
     order_type = OrderType.DELIVERY
 
     assert order_t_type.process_bind_param(order_type, None) == order_type.value
     assert order_t_type.process_result_value(order_type.value, None) == order_type
 
-def test_order_t_type_none(session):
+@pytest.mark.asyncio
+async def test_order_t_type_none(session):
     order_t_type = OrderTType()
     order_type = None
 

@@ -11,9 +11,9 @@ class ListUsersUseCase(UseCaseInterface):
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def execute(self) -> Optional[ListUsersOutputDto]:
+    async def execute(self) -> Optional[ListUsersOutputDto]:
 
-        users = self.user_repository.list_users()
+        users = await self.user_repository.list_users()
 
         if not users:
             return ListUsersOutputDto(users=[])

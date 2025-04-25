@@ -8,9 +8,9 @@ class ListOffersUseCase(UseCaseInterface):
     def __init__(self, offer_repository: OfferRepositoryInterface):
         self.offer_repository = offer_repository
 
-    def execute(self) -> ListOffersOutputDto:
+    async def execute(self) -> ListOffersOutputDto:
         
-        offers = self.offer_repository.list_offers()
+        offers = await self.offer_repository.list_offers()
 
         if not offers:
             return ListOffersOutputDto(offers=[])

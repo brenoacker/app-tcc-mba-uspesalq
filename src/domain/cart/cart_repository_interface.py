@@ -8,23 +8,27 @@ from domain.cart.cart_entity import Cart
 class CartRepositoryInterface(ABC):
 
     @abstractmethod
-    def add_cart(self, cart: Cart) -> Cart:
+    async def add_cart(self, cart: Cart) -> Cart:
         raise NotImplementedError
     
     @abstractmethod
-    def find_cart(self, cart_id: UUID, user_id: UUID) -> Cart:
+    async def find_cart(self, cart_id: UUID, user_id: UUID) -> Cart:
         raise NotImplementedError
 
     @abstractmethod
-    def update_cart(self, cart: Cart) -> Cart:
+    async def update_cart(self, cart: Cart) -> Cart:
         raise NotImplementedError
 
     @abstractmethod
-    def remove_cart(self, cart_id: UUID) -> None:
+    async def remove_cart(self, cart_id: UUID) -> None:
         raise NotImplementedError
     
     @abstractmethod
-    def list_carts(self, user_id: UUID) -> List[Cart]:
+    async def list_carts(self, user_id: UUID) -> List[Cart]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_all_carts(self) -> None:
         raise NotImplementedError
     
     @abstractmethod

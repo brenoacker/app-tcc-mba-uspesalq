@@ -1,30 +1,35 @@
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy.orm.session import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from domain.user.user_entity import User
 from domain.user.user_repository_interface import UserRepositoryInterface
+from infrastructure.api.cache import async_cached
 from infrastructure.user.sqlalchemy.user_model import UserModel
 
 
 class UserRepository(UserRepositoryInterface):
 
-    def __init__(self, session: Session):
-        self.session: Session = session
+    def __init__(self, session: AsyncSession):
+        self.session: AsyncSession = session
 
-    def add_user(self, user: User) -> User:
+    async def add_user(self, user: User) -> User:
 
         user_model = UserModel(id=user.id, name=user.name, email=user.email, age=user.age, gender=user.gender, phone_number=user.phone_number, password=user.password)
 
         self.session.add(user_model)
-        self.session.commit()
+        await self.session.commit()
+        await self.session.refresh(user_model)
 
         return User(id=user_model.id, name=user_model.name, email=user_model.email, age=user_model.age, gender=user_model.gender, phone_number=user_model.phone_number, password=user_model.password)
 
-    def find_user(self, user_id: UUID) -> User:
+    @async_cached(ttl=600, prefix='user')
+    async def find_user(self, user_id: UUID) -> User:
 
-        user_in_db: UserModel = self.session.query(UserModel).filter(UserModel.id == user_id).first()
+        result = await self.session.execute(select(UserModel).filter(UserModel.id == user_id))
+        user_in_db = result.scalars().first()
         
         if not user_in_db:
             raise ValueError(f"User with id '{user_id}' not found")
@@ -33,9 +38,11 @@ class UserRepository(UserRepositoryInterface):
 
         return user
     
-    def find_user_by_email(self, email: str) -> Optional[User]:
+    async def find_user_by_email(self, email: str) -> Optional[User]:
 
-        user_in_db: UserModel = self.session.query(UserModel).filter(UserModel.email == email).first()
+        result = await self.session.execute(select(UserModel).filter(UserModel.email == email))
+        user_in_db = result.scalars().first()
+        
         if not user_in_db:
             return None
        
@@ -43,9 +50,10 @@ class UserRepository(UserRepositoryInterface):
 
         return user
 
-    def list_users(self) -> Optional[List[User]]:
+    async def list_users(self) -> Optional[List[User]]:
 
-        users_in_db = self.session.query(UserModel).all()
+        result = await self.session.execute(select(UserModel))
+        users_in_db = result.scalars().all()
 
         if not users_in_db:
             return None
@@ -65,26 +73,32 @@ class UserRepository(UserRepositoryInterface):
 
         return users
 
-    def update_user(self, user: User) -> None:
+    async def update_user(self, user: User) -> None:
 
-        self.session.query(UserModel).filter(UserModel.id == user.id).update(
-            {
-                "name": user.name,
-                "email": user.email,
-                "age": user.age,
-                "gender": user.gender,
-                "phone_number": user.phone_number,
-                "password": user.password
-            }
-        )
-        self.session.commit()
+        stmt = select(UserModel).filter(UserModel.id == user.id)
+        result = await self.session.execute(stmt)
+        user_model = result.scalars().first()
+        
+        if user_model:
+            user_model.name = user.name
+            user_model.email = user.email
+            user_model.age = user.age
+            user_model.gender = user.gender
+            user_model.phone_number = user.phone_number
+            user_model.password = user.password
+            await self.session.commit()
 
         return None
     
-    def delete_user(self, user_id: UUID) -> None:
+    async def delete_user(self, user_id: UUID) -> None:
         
-        self.session.query(UserModel).filter(UserModel.id == user_id).delete()
-        self.session.commit()
+        stmt = select(UserModel).filter(UserModel.id == user_id)
+        result = await self.session.execute(stmt)
+        user_model = result.scalars().first()
+        
+        if user_model:
+            await self.session.delete(user_model)
+            await self.session.commit()
 
         return None
     

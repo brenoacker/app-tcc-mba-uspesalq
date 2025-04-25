@@ -1,16 +1,23 @@
+import asyncio
 import random
 import uuid
 from datetime import datetime
 from time import sleep
 
+import requests
+
 from domain.__seedwork.use_case_interface import UseCaseInterface
 from domain.cart.cart_entity import Cart
 from domain.cart.cart_repository_interface import CartRepositoryInterface
+from domain.offer.offer_entity import Offer
 from domain.offer.offer_repository_interface import OfferRepositoryInterface
+from domain.offer.offer_type_enum import OfferType
 from domain.order.order_entity import Order
 from domain.order.order_repository_interface import OrderRepositoryInterface
 from domain.order.order_status_enum import OrderStatus
+from domain.payment.payment_card_gateway_enum import PaymentCardGateway
 from domain.payment.payment_entity import Payment
+from domain.payment.payment_method_enum import PaymentMethod
 from domain.payment.payment_repository_interface import \
     PaymentRepositoryInterface
 from domain.payment.payment_status_enum import PaymentStatus
@@ -27,26 +34,36 @@ class CreateOrderUseCase(UseCaseInterface):
         self.offer_repository = offer_repository
         self.payment_repository = payment_repository
 
-    def execute(self, user_id: uuid.UUID, input: CreateOrderInputDto) -> CreateOrderOutputDto:
+    async def execute(self, user_id: uuid.UUID, input: CreateOrderInputDto) -> CreateOrderOutputDto:
         
-        user = self.user_repository.find_user(user_id=user_id)
+        user = await self.user_repository.find_user(user_id=user_id)
 
         if not user:
             raise ValueError(f"User with id '{user_id}' not found")
         
-        order_found: Order = self.order_repository.find_order_by_cart_id(cart_id=input.cart_id)
+        order_found: Order = await self.order_repository.find_order_by_cart_id(cart_id=input.cart_id)
 
         if order_found is not None:
             if order_found.cart_id == input.cart_id:
                 raise ValueError(f"Order for cart_id '{input.cart_id}' already exists")
         
-        cart: Cart = self.cart_repository.find_cart(cart_id=input.cart_id, user_id=user_id)
+        cart: Cart = await self.cart_repository.find_cart(cart_id=input.cart_id, user_id=user_id)
 
         if not cart:
             raise ValueError(f"Cart with id '{input.cart_id}' not found")
 
         if input.offer_id is not None:
-            offer = self.offer_repository.find_offer(offer_id=input.offer_id)
+            offer = await self.offer_repository.find_offer(offer_id=input.offer_id)
+            # offer_data = requests.get(f"http://localhost:8000/offer/{input.offer_id}").json()
+            # offer = Offer(
+            #     id=int(offer_data['id']),  # Converte para inteiro
+            #     start_date=datetime.fromisoformat(offer_data['start_date']),  # Certifique-se de que o formato da data seja compatível
+            #     end_date=datetime.fromisoformat(offer_data['end_date']),
+            #     discount_type=OfferType(offer_data['discount_type']),  # Converte para OfferType
+            #     discount_value=float(offer_data['discount_value'])  # Converte para float
+            # )            
+            # if not offer.is_active():
+            #     raise ValueError(f"Offer with id '{input.offer_id}' is not active")
 
             if not offer:
                 raise ValueError(f"Offer with id '{input.offer_id}' not found")
@@ -55,21 +72,28 @@ class CreateOrderUseCase(UseCaseInterface):
 
         order = Order(id=uuid.uuid4(), user_id=user_id, cart_id=input.cart_id, total_price=cart.total_price, type=input.type, status=OrderStatus.PENDING, created_at=datetime.now(), updated_at=datetime.now(), offer_id=input.offer_id)
 
-        created_order: Order = self.order_repository.create_order(order=order)
+        created_order: Order = await self.order_repository.create_order(order=order)
 
         if not created_order:
             raise ValueError(f"Failed to create order for cart with id '{input.cart_id}'")
 
         if created_order.status != OrderStatus.PENDING:
             raise ValueError(f"Order was created but with '{created_order.status}' status, not 'PENDING'")
-
-        created_payment = self.payment_repository.create_payment(payment=Payment(id=uuid.uuid4(), user_id=user_id, order_id=created_order.id, payment_method=None, payment_card_gateway=None, status=PaymentStatus.PENDING))
+        
+        created_payment = await self.payment_repository.create_payment(payment=Payment(
+            id=uuid.uuid4(), 
+            user_id=user_id, 
+            order_id=created_order.id, 
+            payment_method=None,
+            payment_card_gateway=None,
+            status=PaymentStatus.PENDING
+        ))
 
         if not created_payment:
             raise ValueError(f"Failed to create payment for order with id '{created_order.id}'")
 
-        # if order.offer_id is not None:
-        #     sleep(random.randint(5,10)/10)
+        if order.offer_id is not None:
+            await asyncio.sleep(random.randint(1,2)/10)
 
         return CreateOrderOutputDto(
             id=created_order.id, 
@@ -82,4 +106,3 @@ class CreateOrderUseCase(UseCaseInterface):
             created_at=created_order.created_at, 
             updated_at=created_order.updated_at
         )
-        

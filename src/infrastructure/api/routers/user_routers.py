@@ -2,7 +2,7 @@ import traceback
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from infrastructure.api.database import get_session
 from infrastructure.user.sqlalchemy.user_repository import UserRepository
@@ -17,35 +17,41 @@ from usecases.user.update_user.update_user_usecase import UpdateUserUseCase
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", status_code=201)
-def add_user(request: AddUserInputDto, session: Session = Depends(get_session)):
+async def add_user(request: AddUserInputDto, session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
-        find_user_by_email = user_repository.find_user_by_email(email=request.email)
+        find_user_by_email = await user_repository.find_user_by_email(email=request.email)
         if find_user_by_email:
             raise HTTPException(status_code=422, detail=f"Email '{request.email}' already registered")
         usecase = AddUserUseCase(user_repository=user_repository)
-        output = usecase.execute(input=request)
+        output = await usecase.execute(input=request)
         return output
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 @router.get("/{user_id}")
-def find_user(user_id: UUID, session: Session = Depends(get_session)):
+async def find_user(user_id: UUID, session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
         usecase = FindUserUseCase(user_repository=user_repository)
-        output = usecase.execute(input=FindUserInputDto(id=user_id))
+        output = await usecase.execute(input=FindUserInputDto(id=user_id))
         return output
 
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"User with id '{user_id}' not found") from e
 
 @router.get("/")
-def list_users(session: Session = Depends(get_session)):
+async def list_users(session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
         usecase = ListUsersUseCase(user_repository=user_repository)
-        output = usecase.execute()
+        output = await usecase.execute()
+        user_ids = [user.id for user in output.users]
+        # crie um arquivo que contenha os ids dos usuários, cada um em uma linha
+        with open("user_ids.txt", "w") as f:
+            for user_id in user_ids:
+                f.write(f"{user_id}\n")
+
         return output
 
     except Exception as e:
@@ -53,17 +59,17 @@ def list_users(session: Session = Depends(get_session)):
         raise HTTPException(status_code=500, detail=f"{str(e)}\n{error_trace}") from e  
     
 @router.patch("/{user_id}")
-def update_user(user_id: UUID, request: UpdateUserInputDto, session: Session = Depends(get_session)):
+async def update_user(user_id: UUID, request: UpdateUserInputDto, session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
-        user_found = user_repository.find_user(user_id=user_id)
+        user_found = await user_repository.find_user(user_id=user_id)
         
         update_data = request.dict(exclude_unset=True)
         for key, value in update_data.items():
             setattr(user_found, key, value)
 
         usecase = UpdateUserUseCase(user_repository=user_repository)
-        output = usecase.execute(
+        output = await usecase.execute(
             id=user_id,
             input=UpdateUserInputDto(
                 name=user_found.name,
@@ -80,12 +86,12 @@ def update_user(user_id: UUID, request: UpdateUserInputDto, session: Session = D
     
 
 @router.delete("/{user_id}", status_code=204)
-def delete_user(user_id: UUID, session: Session = Depends(get_session)):
+async def delete_user(user_id: UUID, session: AsyncSession = Depends(get_session)):
     try:
         user_repository = UserRepository(session=session)
-        user_repository.find_user(user_id=user_id)
+        await user_repository.find_user(user_id=user_id)
 
-        user_repository.delete_user(user_id=user_id)
+        await user_repository.delete_user(user_id=user_id)
 
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e

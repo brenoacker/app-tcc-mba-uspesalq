@@ -8,6 +8,8 @@ from domain.user.user_gender_enum import UserGender
 from infrastructure.api.database import Base
 from infrastructure.user.sqlalchemy.user_model import UserGenderType, UserModel
 
+from domain.__seedwork.test_utils import run_async, async_return, async_side_effect
+
 
 @pytest.fixture
 def engine():
@@ -22,7 +24,8 @@ def session(engine):
     session.close()
     Base.metadata.drop_all(engine)
 
-def test_user_model_mapping(session):
+@pytest.mark.asyncio
+async def test_user_model_mapping(session):
     user_id = uuid4()
     user = UserModel(
         id=user_id,
@@ -46,12 +49,14 @@ def test_user_model_mapping(session):
     assert retrieved_user.phone_number == "1234567890"
     assert retrieved_user.password == "password"
 
-def test_user_gender_type():
+@pytest.mark.asyncio
+async def test_user_gender_type():
     user_gender_type = UserGenderType()
     assert user_gender_type.process_bind_param(UserGender.MALE, None) == 'male'
     assert user_gender_type.process_result_value('male', None) == UserGender.MALE
 
-def test_process_bind_param():
+@pytest.mark.asyncio
+async def test_process_bind_param():
     user_gender_type = UserGenderType()
     # Teste com valor do tipo UserGender
     assert user_gender_type.process_bind_param(UserGender.MALE, None) == 'male'
@@ -60,7 +65,8 @@ def test_process_bind_param():
     # Teste com valor None
     assert user_gender_type.process_bind_param(None, None) is None
 
-def test_process_result_value():
+@pytest.mark.asyncio
+async def test_process_result_value():
     user_gender_type = UserGenderType()
     # Teste com valor do tipo string
     assert user_gender_type.process_result_value('male', None) == UserGender.MALE

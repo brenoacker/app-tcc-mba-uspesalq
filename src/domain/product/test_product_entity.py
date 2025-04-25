@@ -1,10 +1,13 @@
 import pytest
 
+from domain.__seedwork.test_utils import (async_return, async_side_effect,
+                                          run_async)
 from domain.product.product_category_enum import ProductCategory
 from domain.product.product_entity import Product
 
 
-def test_product_creation():
+@pytest.mark.asyncio
+async def test_product_creation():
     product_id = 1
     name = "Test Product"
     price = 100.0
@@ -17,7 +20,8 @@ def test_product_creation():
     assert product.price == price
     assert product.category == category
 
-def test_product_invalid_id():
+@pytest.mark.asyncio
+async def test_product_invalid_id():
     name = "Test Product"
     price = 100.0
     category = ProductCategory.DESSERT
@@ -30,7 +34,8 @@ def test_product_invalid_id():
         Product(id=-1, name=name, price=price, category=category)
     assert str(excinfo.value) == "id must be an integer greater than 0"
 
-def test_product_invalid_name():
+@pytest.mark.asyncio
+async def test_product_invalid_name():
     product_id = 1
     price = 100.0
     category = ProductCategory.DRINK
@@ -43,7 +48,8 @@ def test_product_invalid_name():
         Product(id=product_id, name=None, price=price, category=category)
     assert str(excinfo.value) == "name is required"
 
-def test_product_invalid_price():
+@pytest.mark.asyncio
+async def test_product_invalid_price():
     product_id = 1
     name = "Test Product"
     category = ProductCategory.SIDE_DISH
@@ -56,7 +62,8 @@ def test_product_invalid_price():
         Product(id=product_id, name=name, price="invalid_price", category=category)
     assert str(excinfo.value) == "price must be a non-negative number"
 
-def test_product_invalid_category():
+@pytest.mark.asyncio
+async def test_product_invalid_category():
     product_id = 1
     name = "Test Product"
     price = 100.0

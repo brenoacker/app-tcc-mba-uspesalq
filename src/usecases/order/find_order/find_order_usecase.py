@@ -8,9 +8,9 @@ class FindOrderUseCase(UseCaseInterface):
     def __init__(self, order_repository: OrderRepositoryInterface):
         self.order_repository = order_repository
 
-    def execute(self, input: FindOrderInputDto) -> FindOrderOutputDto:
+    async def execute(self, input: FindOrderInputDto) -> FindOrderOutputDto:
         
-        order = self.order_repository.find_order(order_id=input.id, user_id=input.user_id)
+        order = await self.order_repository.find_order(order_id=input.id, user_id=input.user_id)
 
         if order is None:
             raise ValueError(f"Order with id '{input.id}' not found")

@@ -2,11 +2,13 @@ from uuid import uuid4
 
 import pytest
 
+from domain.__seedwork.test_utils import run_async
 from domain.user.user_entity import User
 from domain.user.user_gender_enum import UserGender
 
 
-def test_user_creation():
+@pytest.mark.asyncio
+async def test_user_creation():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
@@ -23,7 +25,8 @@ def test_user_creation():
     assert user.phone_number == phone_number
     assert user.password == password
 
-def test_user_with_invalid_age():
+@pytest.mark.asyncio
+async def test_user_with_invalid_age():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
@@ -36,7 +39,8 @@ def test_user_with_invalid_age():
         User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "age must be an integer"
 
-def test_user_with_age_under_18():
+@pytest.mark.asyncio
+async def test_user_with_age_under_18():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
@@ -49,7 +53,8 @@ def test_user_with_age_under_18():
         User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "age must be greater than 18"
 
-def test_user_with_invalid_gender():
+@pytest.mark.asyncio
+async def test_user_with_invalid_gender():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
@@ -62,7 +67,8 @@ def test_user_with_invalid_gender():
         User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "gender must be an instance of UserGender"
 
-def test_user_invalid_id():
+@pytest.mark.asyncio
+async def test_user_invalid_id():
     name = "Test User"
     email = "test@example.com"
     age = 25
@@ -74,7 +80,8 @@ def test_user_invalid_id():
         User(id="invalid_uuid", name=name, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "id must be an UUID"
 
-def test_user_invalid_name():
+@pytest.mark.asyncio
+async def test_user_invalid_name():
     user_id = uuid4()
     email = "test@example.com"
     age = 25
@@ -90,7 +97,8 @@ def test_user_invalid_name():
         User(id=user_id, name=None, email=email, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "name is required"
 
-def test_user_invalid_email():
+@pytest.mark.asyncio
+async def test_user_invalid_email():
     user_id = uuid4()
     name = "Test User"
     age = 25
@@ -106,7 +114,8 @@ def test_user_invalid_email():
         User(id=user_id, name=name, email=None, age=age, gender=gender, phone_number=phone_number, password=password)
     assert str(excinfo.value) == "email is required"
 
-def test_user_invalid_phone_number():
+@pytest.mark.asyncio
+async def test_user_invalid_phone_number():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
@@ -122,7 +131,8 @@ def test_user_invalid_phone_number():
         User(id=user_id, name=name, email=email, age=age, gender=gender, phone_number=None, password=password)
     assert str(excinfo.value) == "phone_number is required"
 
-def test_user_invalid_password():
+@pytest.mark.asyncio
+async def test_user_invalid_password():
     user_id = uuid4()
     name = "Test User"
     email = "test@example.com"
