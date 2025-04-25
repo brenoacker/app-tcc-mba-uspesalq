@@ -26,6 +26,7 @@ class Cart:
             raise Exception("total_price must be a positive float")
         
         # Converts to Decimal and sets the precision to two decimal places
+        total_price_decimal = Decimal(str(total_price)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
         return float(total_price_decimal)
 
     def validate(self):
