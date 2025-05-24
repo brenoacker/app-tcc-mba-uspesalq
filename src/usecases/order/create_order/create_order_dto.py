@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal # Added import
 from typing import Optional
 from uuid import UUID
 
@@ -19,7 +20,7 @@ class CreateOrderOutputDto(BaseModel):
     cart_id: UUID
     type: OrderType
     offer_id: int = None
-    total_price: float
+    total_price: Decimal  # Changed to Decimal
     status: OrderStatus
     created_at: datetime
     updated_at: datetime
