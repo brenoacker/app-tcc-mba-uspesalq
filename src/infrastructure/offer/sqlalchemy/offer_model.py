@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Float, Integer, String, TypeDecorator
+from sqlalchemy import Column, DateTime, Float, Integer, String, TypeDecorator, Numeric
 
 from domain.offer.offer_type_enum import OfferType
 from infrastructure.api.database import Base
@@ -24,4 +24,4 @@ class OfferModel(Base):
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
     discount_type = Column(OfferDiscountType, nullable=False)
-    discount_value = Column(Float, nullable=False)
+    discount_value = Column(Numeric(10, 2), nullable=False)  # Changed from Float
