@@ -54,16 +54,6 @@ class CreateOrderUseCase(UseCaseInterface):
 
         if input.offer_id is not None:
             offer = await self.offer_repository.find_offer(offer_id=input.offer_id)
-            # offer_data = requests.get(f"http://localhost:8000/offer/{input.offer_id}").json()
-            # offer = Offer(
-            #     id=int(offer_data['id']),  # Converte para inteiro
-            #     start_date=datetime.fromisoformat(offer_data['start_date']),  # Certifique-se de que o formato da data seja compatível
-            #     end_date=datetime.fromisoformat(offer_data['end_date']),
-            #     discount_type=OfferType(offer_data['discount_type']),  # Converte para OfferType
-            #     discount_value=float(offer_data['discount_value'])  # Converte para float
-            # )            
-            # if not offer.is_active():
-            #     raise ValueError(f"Offer with id '{input.offer_id}' is not active")
 
             if not offer:
                 raise ValueError(f"Offer with id '{input.offer_id}' not found")
