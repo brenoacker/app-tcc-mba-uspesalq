@@ -1,4 +1,4 @@
-from sqlalchemy import (Column, Float, ForeignKey)
+from sqlalchemy import (Column, Float, ForeignKey, Numeric)
 from sqlalchemy.dialects.postgresql import UUID
 
 from infrastructure.api.database import Base
@@ -9,4 +9,4 @@ class CartModel(Base):
 
     id = Column(UUID, primary_key=True, index=True)
     user_id = Column(UUID, ForeignKey("tb_users.id"))
-    total_price = Column(Float, nullable=False)
+    total_price = Column(Numeric(10, 2), nullable=False)  # Changed from Float

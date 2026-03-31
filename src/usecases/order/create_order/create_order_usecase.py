@@ -1,8 +1,6 @@
 import asyncio
-import random
 import uuid
 from datetime import datetime
-from time import sleep
 
 import requests
 
@@ -57,6 +55,9 @@ class CreateOrderUseCase(UseCaseInterface):
 
             if not offer:
                 raise ValueError(f"Offer with id '{input.offer_id}' not found")
+            
+            if not offer.is_active():
+                raise ValueError(f"Offer with id '{input.offer_id}' is not active")
         
             cart.total_price = offer.apply_discount(cart.total_price)
 
@@ -81,9 +82,6 @@ class CreateOrderUseCase(UseCaseInterface):
 
         if not created_payment:
             raise ValueError(f"Failed to create payment for order with id '{created_order.id}'")
-
-        if order.offer_id is not None:
-            await asyncio.sleep(random.randint(1,2)/10)
 
         return CreateOrderOutputDto(
             id=created_order.id, 
